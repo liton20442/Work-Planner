@@ -52,13 +52,13 @@ header p{
 .container{
     max-width:1100px;
     margin:auto;
-    padding:12px;
+    padding:9px;
 }
 
 .form-card{
     background:white;
     border-radius:12px;
-    padding:12px;
+    padding:10px;
     box-shadow:0 2px 8px rgba(0,0,0,.08);
     margin-bottom:12px;
 }
@@ -148,7 +148,7 @@ th{
 
 td{
     padding:7px;
-    font-size:15px;
+    font-size:17px;
     border-bottom:1px solid #e5e7eb;
     vertical-align:middle;
 }
@@ -182,7 +182,7 @@ td:nth-child(5){
 td input,
 td select{
     min-height:40px;
-    font-size:15px;
+    font-size:17px;
     padding:7px 8px;
 }
 
@@ -241,13 +241,13 @@ td select{
     }
 
     td{
-        font-size:15px;
+        font-size:17px;
         padding:6px;
     }
 
     td input,
     td select{
-        font-size:15px;
+        font-size:17px;
         min-height:38px;
         padding:6px 7px;
     }
@@ -587,12 +587,7 @@ function addWork(){
     }
 
 
-    if(!time){
-
-        workTime.focus();
-        return;
-
-    }
+    /* Time is optional */
 
 
     works.push({
@@ -611,9 +606,8 @@ function addWork(){
 
 
     /*
-       After adding a work,
-       keep today's/default date selected
-       for the next entry.
+       Keep selected date for next entry.
+       Clear only description and time.
     */
 
     workDescription.value = "";
