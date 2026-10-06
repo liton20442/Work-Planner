@@ -23,18 +23,19 @@
 body{
     margin:0;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-    background:#f3f7f7;
+    background:linear-gradient(135deg,#eefcf9,#f4f7ff);
     color:#1f2937;
 }
 
 header{
-    background:#0f766e;
+    background:linear-gradient(135deg,#0f766e,#0d9488,#0891b2);
     color:white;
     padding:18px 14px;
     text-align:center;
     position:sticky;
     top:0;
     z-index:10;
+    box-shadow:0 4px 12px rgba(15,118,110,.22);
 }
 
 header h1{
@@ -46,7 +47,7 @@ header h1{
 header p{
     margin:5px 0 0;
     font-size:14px;
-    opacity:.9;
+    opacity:.95;
 }
 
 .container{
@@ -56,11 +57,12 @@ header p{
 }
 
 .form-card{
-    background:white;
-    border-radius:12px;
+    background:rgba(255,255,255,.96);
+    border-radius:14px;
     padding:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    box-shadow:0 4px 14px rgba(15,118,110,.10);
     margin-bottom:12px;
+    border:1px solid #d9f0ed;
 }
 
 .form-grid{
@@ -79,6 +81,7 @@ header p{
     font-size:13px;
     font-weight:600;
     margin-bottom:5px;
+    color:#155e75;
 }
 
 input,
@@ -96,18 +99,19 @@ button{
 input:focus,
 select:focus{
     outline:none;
-    border-color:#0f766e;
-    box-shadow:0 0 0 2px rgba(15,118,110,.12);
+    border-color:#0d9488;
+    box-shadow:0 0 0 3px rgba(13,148,136,.13);
 }
 
 button{
-    background:#0f766e;
+    background:linear-gradient(135deg,#0f766e,#0891b2);
     color:white;
     border:none;
     font-weight:600;
     cursor:pointer;
     padding-left:16px;
     padding-right:16px;
+    box-shadow:0 3px 8px rgba(8,145,178,.20);
 }
 
 button:active{
@@ -115,10 +119,11 @@ button:active{
 }
 
 .table-card{
-    background:white;
-    border-radius:12px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    background:rgba(255,255,255,.97);
+    border-radius:14px;
+    box-shadow:0 4px 14px rgba(15,118,110,.10);
     overflow:hidden;
+    border:1px solid #dcefeb;
 }
 
 .table-wrap{
@@ -129,12 +134,12 @@ button:active{
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:650px;
+    min-width:630px;
     table-layout:fixed;
 }
 
 thead{
-    background:#e6f2f1;
+    background:linear-gradient(90deg,#dff7f2,#e0f2fe);
 }
 
 th{
@@ -143,7 +148,8 @@ th{
     font-size:13px;
     font-weight:700;
     white-space:nowrap;
-    border-bottom:1px solid #cbd5e1;
+    border-bottom:1px solid #b9dfda;
+    color:#134e4a;
 }
 
 td{
@@ -151,6 +157,15 @@ td{
     font-size:17px;
     border-bottom:1px solid #e5e7eb;
     vertical-align:middle;
+    background:#ffffff;
+}
+
+tbody tr:last-child td{
+    border-bottom:none;
+}
+
+tbody tr:hover td{
+    background:#f0fdfa;
 }
 
 th:nth-child(1),
@@ -160,7 +175,7 @@ td:nth-child(1){
 
 th:nth-child(2),
 td:nth-child(2){
-    width:28%;
+    width:32%;
 }
 
 th:nth-child(3),
@@ -188,6 +203,15 @@ td select{
 
 .action-select{
     min-width:105px;
+    font-weight:600;
+}
+
+/* Action colors */
+
+.action-select{
+    color:#92400e;
+    background:#fffbeb;
+    border-color:#fcd34d;
 }
 
 .delete-btn{
@@ -196,13 +220,19 @@ td select{
     height:38px;
     min-height:38px;
     padding:0;
-    border-radius:7px;
-    background:#dc2626;
+    border-radius:8px;
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+    color:white;
     font-size:21px;
     line-height:1;
     display:inline-flex;
     align-items:center;
     justify-content:center;
+    box-shadow:0 2px 6px rgba(220,38,38,.22);
+}
+
+.delete-btn:hover{
+    background:linear-gradient(135deg,#dc2626,#b91c1c);
 }
 
 .empty{
@@ -210,6 +240,7 @@ td select{
     padding:25px 15px;
     color:#64748b;
     font-size:14px;
+    background:#f8fffe;
 }
 
 @media(max-width:700px){
@@ -370,8 +401,6 @@ const workTableBody = document.getElementById("workTableBody");
 const emptyMessage = document.getElementById("emptyMessage");
 
 
-/* Today's date */
-
 function setToday(){
 
     const today = new Date();
@@ -521,6 +550,9 @@ function renderWorks(){
         actionSelect.addEventListener("change",function(){
 
             works[index].action = this.value;
+
+            updateActionColor(this);
+
             saveData();
 
         });
@@ -559,7 +591,36 @@ function renderWorks(){
 
         workTableBody.appendChild(tr);
 
+        updateActionColor(actionSelect);
+
     });
+
+}
+
+
+function updateActionColor(select){
+
+    if(select.value === "Completed"){
+
+        select.style.background = "#ecfdf5";
+        select.style.borderColor = "#6ee7b7";
+        select.style.color = "#047857";
+
+    }
+    else if(select.value === "Partial"){
+
+        select.style.background = "#fff7ed";
+        select.style.borderColor = "#fdba74";
+        select.style.color = "#c2410c";
+
+    }
+    else{
+
+        select.style.background = "#fffbeb";
+        select.style.borderColor = "#fcd34d";
+        select.style.color = "#92400e";
+
+    }
 
 }
 
@@ -587,9 +648,6 @@ function addWork(){
     }
 
 
-    /* Time is optional */
-
-
     works.push({
 
         id:createId(),
@@ -603,12 +661,6 @@ function addWork(){
 
     saveData();
     renderWorks();
-
-
-    /*
-       Keep selected date for next entry.
-       Clear only description and time.
-    */
 
     workDescription.value = "";
     workTime.value = "";
@@ -624,7 +676,7 @@ addWorkBtn.addEventListener(
 );
 
 
-/* Enter key moves to next field */
+/* Enter navigation */
 
 const formFields = [
 
