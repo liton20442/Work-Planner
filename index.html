@@ -628,18 +628,33 @@ function renderWorks(){
         timeInput.placeholder =
             "Time";
 
-        timeInput.addEventListener(
-            "input",
-            function(){
+          timeInput.addEventListener(
+    "input",
+    function(){
 
-                works[index].time =
-                    this.value;
+        let value = this.value.trim();
 
-                saveData();
+        if(value !== ""){
+
+            const number =
+                parseFloat(value);
+
+            if(!isNaN(number)){
+
+                this.value =
+                    number.toFixed(2);
 
             }
-        );
 
+        }
+
+        works[index].time =
+            this.value;
+
+        saveData();
+
+    }
+);
         timeTd.appendChild(
             timeInput
         );
