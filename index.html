@@ -52,21 +52,21 @@ header p{
 .container{
     max-width:1100px;
     margin:auto;
-    padding:14px;
+    padding:12px;
 }
 
 .form-card{
     background:white;
     border-radius:12px;
-    padding:14px;
+    padding:12px;
     box-shadow:0 2px 8px rgba(0,0,0,.08);
-    margin-bottom:15px;
+    margin-bottom:12px;
 }
 
 .form-grid{
     display:grid;
     grid-template-columns:1fr 2fr 1fr auto;
-    gap:10px;
+    gap:8px;
     align-items:end;
 }
 
@@ -76,19 +76,19 @@ header p{
 }
 
 .field label{
-    font-size:14px;
+    font-size:13px;
     font-weight:600;
-    margin-bottom:6px;
+    margin-bottom:5px;
 }
 
 input,
 select,
 button{
     width:100%;
-    min-height:46px;
+    min-height:44px;
     border:1px solid #cbd5e1;
     border-radius:8px;
-    padding:10px 12px;
+    padding:8px 10px;
     font-size:16px;
     background:white;
 }
@@ -106,8 +106,8 @@ button{
     border:none;
     font-weight:600;
     cursor:pointer;
-    padding-left:18px;
-    padding-right:18px;
+    padding-left:16px;
+    padding-right:16px;
 }
 
 button:active{
@@ -129,7 +129,8 @@ button:active{
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:720px;
+    min-width:650px;
+    table-layout:fixed;
 }
 
 thead{
@@ -137,66 +138,93 @@ thead{
 }
 
 th{
-    padding:11px 10px;
+    padding:8px 7px;
     text-align:left;
-    font-size:14px;
+    font-size:13px;
     font-weight:700;
     white-space:nowrap;
     border-bottom:1px solid #cbd5e1;
 }
 
 td{
-    padding:10px;
-    font-size:16px;
+    padding:7px;
+    font-size:15px;
     border-bottom:1px solid #e5e7eb;
     vertical-align:middle;
 }
 
+th:nth-child(1),
+td:nth-child(1){
+    width:18%;
+}
+
+th:nth-child(2),
+td:nth-child(2){
+    width:40%;
+}
+
+th:nth-child(3),
+td:nth-child(3){
+    width:17%;
+}
+
+th:nth-child(4),
+td:nth-child(4){
+    width:17%;
+}
+
+th:nth-child(5),
+td:nth-child(5){
+    width:8%;
+    text-align:center;
+}
+
 td input,
 td select{
-    min-height:42px;
-    font-size:16px;
-    padding:8px 10px;
+    min-height:40px;
+    font-size:15px;
+    padding:7px 8px;
 }
 
 .action-select{
-    min-width:125px;
+    min-width:105px;
 }
 
 .delete-btn{
-    width:42px;
-    min-width:42px;
-    height:42px;
-    min-height:42px;
+    width:38px;
+    min-width:38px;
+    height:38px;
+    min-height:38px;
     padding:0;
-    border-radius:8px;
+    border-radius:7px;
     background:#dc2626;
-    font-size:22px;
+    font-size:21px;
     line-height:1;
-    display:flex;
+    display:inline-flex;
     align-items:center;
     justify-content:center;
 }
 
 .empty{
     text-align:center;
-    padding:30px 15px;
+    padding:25px 15px;
     color:#64748b;
-    font-size:15px;
+    font-size:14px;
 }
 
 @media(max-width:700px){
+
     .container{
-        padding:10px;
+        padding:9px;
     }
 
     .form-grid{
         grid-template-columns:1fr;
-        gap:9px;
+        gap:8px;
     }
 
     .form-card{
-        padding:12px;
+        padding:10px;
     }
 
     header h1{
@@ -204,17 +232,32 @@ td select{
     }
 
     table{
-        min-width:760px;
+        min-width:630px;
     }
 
     th{
-        font-size:13px;
-        padding:10px 8px;
+        font-size:12px;
+        padding:7px 6px;
     }
 
     td{
-        font-size:16px;
-        padding:8px;
+        font-size:15px;
+        padding:6px;
+    }
+
+    td input,
+    td select{
+        font-size:15px;
+        min-height:38px;
+        padding:6px 7px;
+    }
+
+    .delete-btn{
+        width:36px;
+        min-width:36px;
+        height:36px;
+        min-height:36px;
+        font-size:20px;
     }
 }
 </style>
@@ -235,10 +278,9 @@ td select{
 
             <div class="field">
                 <label for="workDate">Date</label>
-                <input type="text"
+                <input type="date"
                        id="workDate"
-                       autocomplete="off"
-                       placeholder="Enter date">
+                       autocomplete="off">
             </div>
 
             <div class="field">
@@ -295,22 +337,29 @@ td select{
 </div>
 
 <script>
+
 const STORAGE_KEY = "workPlannerDataV1";
 
 let works = [];
 
 try{
+
     const saved = localStorage.getItem(STORAGE_KEY);
 
     if(saved){
+
         const parsed = JSON.parse(saved);
 
         if(Array.isArray(parsed)){
             works = parsed;
         }
+
     }
+
 }catch(error){
+
     works = [];
+
 }
 
 const workDate = document.getElementById("workDate");
@@ -320,45 +369,84 @@ const addWorkBtn = document.getElementById("addWorkBtn");
 const workTableBody = document.getElementById("workTableBody");
 const emptyMessage = document.getElementById("emptyMessage");
 
-function saveData(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(works));
+
+/* Today's date */
+
+function setToday(){
+
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2,"0");
+    const day = String(today.getDate()).padStart(2,"0");
+
+    workDate.value = `${year}-${month}-${day}`;
+
 }
 
-function createId(){
-    return Date.now().toString() + Math.random().toString(36).slice(2);
+setToday();
+
+
+function saveData(){
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(works)
+    );
+
 }
+
+
+function createId(){
+
+    return Date.now().toString()
+        + Math.random().toString(36).slice(2);
+
+}
+
 
 function renderWorks(){
 
     workTableBody.innerHTML = "";
 
     if(works.length === 0){
+
         emptyMessage.style.display = "block";
         return;
+
     }
 
     emptyMessage.style.display = "none";
 
-    works.forEach((work, index) => {
+    works.forEach((work,index)=>{
 
         const tr = document.createElement("tr");
 
+
+        /* Date */
+
         const dateTd = document.createElement("td");
+
         const dateInput = document.createElement("input");
 
-        dateInput.type = "text";
+        dateInput.type = "date";
         dateInput.value = work.date || "";
         dateInput.autocomplete = "off";
-        dateInput.placeholder = "Date";
 
-        dateInput.addEventListener("input", function(){
+        dateInput.addEventListener("input",function(){
+
             works[index].date = this.value;
             saveData();
+
         });
 
         dateTd.appendChild(dateInput);
 
+
+        /* Description */
+
         const descriptionTd = document.createElement("td");
+
         const descriptionInput = document.createElement("input");
 
         descriptionInput.type = "text";
@@ -366,14 +454,20 @@ function renderWorks(){
         descriptionInput.autocomplete = "off";
         descriptionInput.placeholder = "Work description";
 
-        descriptionInput.addEventListener("input", function(){
+        descriptionInput.addEventListener("input",function(){
+
             works[index].description = this.value;
             saveData();
+
         });
 
         descriptionTd.appendChild(descriptionInput);
 
+
+        /* Time */
+
         const timeTd = document.createElement("td");
+
         const timeInput = document.createElement("input");
 
         timeInput.type = "text";
@@ -381,29 +475,41 @@ function renderWorks(){
         timeInput.autocomplete = "off";
         timeInput.placeholder = "Time";
 
-        timeInput.addEventListener("input", function(){
+        timeInput.addEventListener("input",function(){
+
             works[index].time = this.value;
             saveData();
+
         });
 
         timeTd.appendChild(timeInput);
 
+
+        /* Action */
+
         const actionTd = document.createElement("td");
+
         const actionSelect = document.createElement("select");
 
         actionSelect.className = "action-select";
 
         const pendingOption = document.createElement("option");
+
         pendingOption.value = "Pending";
         pendingOption.textContent = "Pending";
 
+
         const completedOption = document.createElement("option");
+
         completedOption.value = "Completed";
         completedOption.textContent = "Completed";
 
+
         const partialOption = document.createElement("option");
+
         partialOption.value = "Partial";
         partialOption.textContent = "Partial";
+
 
         actionSelect.appendChild(pendingOption);
         actionSelect.appendChild(completedOption);
@@ -411,24 +517,31 @@ function renderWorks(){
 
         actionSelect.value = work.action || "Pending";
 
-        actionSelect.addEventListener("change", function(){
+
+        actionSelect.addEventListener("change",function(){
+
             works[index].action = this.value;
             saveData();
+
         });
 
         actionTd.appendChild(actionSelect);
 
+
+        /* Delete */
+
         const deleteTd = document.createElement("td");
 
         const deleteBtn = document.createElement("button");
+
         deleteBtn.type = "button";
         deleteBtn.className = "delete-btn";
         deleteBtn.textContent = "×";
-        deleteBtn.setAttribute("aria-label", "Delete");
+        deleteBtn.setAttribute("aria-label","Delete");
 
-        deleteBtn.addEventListener("click", function(){
+        deleteBtn.addEventListener("click",function(){
 
-            works.splice(index, 1);
+            works.splice(index,1);
 
             saveData();
             renderWorks();
@@ -437,6 +550,7 @@ function renderWorks(){
 
         deleteTd.appendChild(deleteBtn);
 
+
         tr.appendChild(dateTd);
         tr.appendChild(descriptionTd);
         tr.appendChild(timeTd);
@@ -444,8 +558,11 @@ function renderWorks(){
         tr.appendChild(deleteTd);
 
         workTableBody.appendChild(tr);
+
     });
+
 }
+
 
 function addWork(){
 
@@ -453,77 +570,117 @@ function addWork(){
     const description = workDescription.value.trim();
     const time = workTime.value.trim();
 
+
     if(!date){
+
         workDate.focus();
         return;
+
     }
+
 
     if(!description){
+
         workDescription.focus();
         return;
+
     }
+
 
     if(!time){
+
         workTime.focus();
         return;
+
     }
 
+
     works.push({
+
         id:createId(),
         date:date,
         description:description,
         time:time,
         action:"Pending"
+
     });
+
 
     saveData();
     renderWorks();
 
-    workDate.value = "";
+
+    /*
+       After adding a work,
+       keep today's/default date selected
+       for the next entry.
+    */
+
     workDescription.value = "";
     workTime.value = "";
 
-    workDate.focus();
+    workDescription.focus();
+
 }
 
-addWorkBtn.addEventListener("click", addWork);
+
+addWorkBtn.addEventListener(
+    "click",
+    addWork
+);
 
 
-/* Enter key moves to the next field */
+/* Enter key moves to next field */
 
 const formFields = [
+
     workDate,
     workDescription,
     workTime,
     addWorkBtn
+
 ];
 
-formFields.forEach((field, index) => {
 
-    field.addEventListener("keydown", function(event){
+formFields.forEach((field,index)=>{
 
-        if(event.key === "Enter"){
+    field.addEventListener(
+        "keydown",
+        function(event){
 
-            event.preventDefault();
+            if(event.key === "Enter"){
 
-            if(field === addWorkBtn){
-                addWork();
-                return;
+                event.preventDefault();
+
+
+                if(field === addWorkBtn){
+
+                    addWork();
+                    return;
+
+                }
+
+
+                const nextField =
+                    formFields[index + 1];
+
+
+                if(nextField){
+
+                    nextField.focus();
+
+                }
+
             }
 
-            const nextField = formFields[index + 1];
-
-            if(nextField){
-                nextField.focus();
-            }
         }
-
-    });
+    );
 
 });
 
 
 renderWorks();
+
 </script>
 
 </body>
