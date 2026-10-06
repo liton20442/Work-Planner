@@ -25,12 +25,12 @@
 body{
     margin:0;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-    background:linear-gradient(135deg,#eefcf9,#f4f7ff);
+    background:#f4f7f8;
     color:#1f2937;
 }
 
 header{
-    background:linear-gradient(135deg,#0f766e,#0d9488,#0891b2);
+    background:#0f766e;
     color:white;
     padding:18px 14px;
     text-align:center;
@@ -59,7 +59,7 @@ header p{
 }
 
 .form-card{
-    background:rgba(255,255,255,.96);
+    background:#ffffff;
     border-radius:14px;
     padding:10px;
     box-shadow:0 4px 14px rgba(15,118,110,.10);
@@ -105,8 +105,6 @@ select:focus{
     box-shadow:0 0 0 3px rgba(13,148,136,.13);
 }
 
-/* All Buttons */
-
 button{
     color:white;
     border:none;
@@ -115,31 +113,24 @@ button{
     padding-left:16px;
     padding-right:16px;
     box-shadow:0 3px 8px rgba(0,0,0,.15);
-    transition:transform .12s ease,filter .12s ease;
 }
 
 button:active{
     transform:scale(.97);
 }
 
-button:hover{
-    filter:brightness(1.05);
-}
-
-/* Add Work Button */
+/* Colorful Buttons Only */
 
 .add-btn{
-    background:linear-gradient(135deg,#059669,#0d9488,#0891b2);
+    background:#0d9488;
 }
 
-/* Backup / Restore */
-
 .backup-btn{
-    background:linear-gradient(135deg,#2563eb,#0891b2);
+    background:#2563eb;
 }
 
 .restore-btn{
-    background:linear-gradient(135deg,#7c3aed,#c026d3);
+    background:#7c3aed;
 }
 
 .utility-buttons{
@@ -152,10 +143,8 @@ button:hover{
     flex:1;
 }
 
-/* Table */
-
 .table-card{
-    background:rgba(255,255,255,.97);
+    background:#ffffff;
     border-radius:14px;
     box-shadow:0 4px 14px rgba(15,118,110,.10);
     overflow:hidden;
@@ -175,7 +164,7 @@ table{
 }
 
 thead{
-    background:linear-gradient(90deg,#dff7f2,#e0f2fe);
+    background:#e5f5f2;
 }
 
 th{
@@ -245,8 +234,6 @@ td select{
     border-color:#fcd34d;
 }
 
-/* Delete Button */
-
 .delete-btn{
     width:38px;
     min-width:38px;
@@ -254,7 +241,7 @@ td select{
     min-height:38px;
     padding:0;
     border-radius:8px;
-    background:linear-gradient(135deg,#ef4444,#dc2626);
+    background:#ef4444;
     color:white;
     font-size:21px;
     line-height:1;
@@ -265,7 +252,7 @@ td select{
 }
 
 .delete-btn:hover{
-    background:linear-gradient(135deg,#dc2626,#b91c1c);
+    background:#dc2626;
 }
 
 .empty{
@@ -395,7 +382,7 @@ td select{
 
         <input type="file"
                id="restoreFile"
-               accept=".json,application/json"
+               accept=".json,application/json,.backup"
                style="display:none;">
 
     </div>
@@ -438,11 +425,13 @@ let works = [];
 
 try{
 
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved =
+        localStorage.getItem(STORAGE_KEY);
 
     if(saved){
 
-        const parsed = JSON.parse(saved);
+        const parsed =
+            JSON.parse(saved);
 
         if(Array.isArray(parsed)){
             works = parsed;
@@ -558,6 +547,7 @@ function renderWorks(){
             document.createElement("input");
 
         dateInput.type = "date";
+
         dateInput.value =
             work.date || "";
 
@@ -939,7 +929,7 @@ backupBtn.addEventListener(
                 [json],
                 {
                     type:
-                    "application/json"
+                    "application/octet-stream"
                 }
             );
 
@@ -974,7 +964,11 @@ backupBtn.addEventListener(
         link.download =
             "Work-Planner-Backup-"
             + dateName
-            + ".json";
+            + ".backup";
+
+
+        link.style.display =
+            "none";
 
 
         document.body.appendChild(
@@ -985,10 +979,19 @@ backupBtn.addEventListener(
         link.click();
 
 
-        link.remove();
+        document.body.removeChild(
+            link
+        );
 
 
-        URL.revokeObjectURL(url);
+        setTimeout(
+            function(){
+
+                URL.revokeObjectURL(url);
+
+            },
+            1000
+        );
 
     }
 );
