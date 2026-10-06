@@ -13,6 +13,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Work Planner">
 
+<link rel="manifest" href="manifest.json">
+
 <title>Work Planner</title>
 
 <style>
@@ -23,18 +25,19 @@
 body{
     margin:0;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-    background:#f3f7f7;
+    background:linear-gradient(135deg,#eefcf9,#f4f7ff);
     color:#1f2937;
 }
 
 header{
-    background:#0f766e;
+    background:linear-gradient(135deg,#0f766e,#0d9488,#0891b2);
     color:white;
     padding:18px 14px;
     text-align:center;
     position:sticky;
     top:0;
     z-index:10;
+    box-shadow:0 4px 12px rgba(15,118,110,.22);
 }
 
 header h1{
@@ -46,7 +49,7 @@ header h1{
 header p{
     margin:5px 0 0;
     font-size:14px;
-    opacity:.9;
+    opacity:.95;
 }
 
 .container{
@@ -56,11 +59,12 @@ header p{
 }
 
 .form-card{
-    background:white;
-    border-radius:12px;
+    background:rgba(255,255,255,.96);
+    border-radius:14px;
     padding:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    box-shadow:0 4px 14px rgba(15,118,110,.10);
     margin-bottom:12px;
+    border:1px solid #d9f0ed;
 }
 
 .form-grid{
@@ -79,6 +83,7 @@ header p{
     font-size:13px;
     font-weight:600;
     margin-bottom:5px;
+    color:#155e75;
 }
 
 input,
@@ -96,29 +101,65 @@ button{
 input:focus,
 select:focus{
     outline:none;
-    border-color:#0f766e;
-    box-shadow:0 0 0 2px rgba(15,118,110,.12);
+    border-color:#0d9488;
+    box-shadow:0 0 0 3px rgba(13,148,136,.13);
 }
 
+/* All Buttons */
+
 button{
-    background:#0f766e;
     color:white;
     border:none;
-    font-weight:600;
+    font-weight:700;
     cursor:pointer;
     padding-left:16px;
     padding-right:16px;
+    box-shadow:0 3px 8px rgba(0,0,0,.15);
+    transition:transform .12s ease,filter .12s ease;
 }
 
 button:active{
-    transform:scale(.98);
+    transform:scale(.97);
 }
 
+button:hover{
+    filter:brightness(1.05);
+}
+
+/* Add Work Button */
+
+.add-btn{
+    background:linear-gradient(135deg,#059669,#0d9488,#0891b2);
+}
+
+/* Backup / Restore */
+
+.backup-btn{
+    background:linear-gradient(135deg,#2563eb,#0891b2);
+}
+
+.restore-btn{
+    background:linear-gradient(135deg,#7c3aed,#c026d3);
+}
+
+.utility-buttons{
+    display:flex;
+    gap:8px;
+    margin-top:9px;
+}
+
+.utility-buttons button{
+    flex:1;
+}
+
+/* Table */
+
 .table-card{
-    background:white;
-    border-radius:12px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    background:rgba(255,255,255,.97);
+    border-radius:14px;
+    box-shadow:0 4px 14px rgba(15,118,110,.10);
     overflow:hidden;
+    border:1px solid #dcefeb;
 }
 
 .table-wrap{
@@ -129,12 +170,12 @@ button:active{
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:650px;
+    min-width:630px;
     table-layout:fixed;
 }
 
 thead{
-    background:#e6f2f1;
+    background:linear-gradient(90deg,#dff7f2,#e0f2fe);
 }
 
 th{
@@ -143,7 +184,8 @@ th{
     font-size:13px;
     font-weight:700;
     white-space:nowrap;
-    border-bottom:1px solid #cbd5e1;
+    border-bottom:1px solid #b9dfda;
+    color:#134e4a;
 }
 
 td{
@@ -151,6 +193,15 @@ td{
     font-size:17px;
     border-bottom:1px solid #e5e7eb;
     vertical-align:middle;
+    background:#ffffff;
+}
+
+tbody tr:last-child td{
+    border-bottom:none;
+}
+
+tbody tr:hover td{
+    background:#f0fdfa;
 }
 
 th:nth-child(1),
@@ -160,12 +211,12 @@ td:nth-child(1){
 
 th:nth-child(2),
 td:nth-child(2){
-    width:28%;
+    width:32%;
 }
 
 th:nth-child(3),
 td:nth-child(3){
-    width:10%;
+    width:17%;
 }
 
 th:nth-child(4),
@@ -188,7 +239,13 @@ td select{
 
 .action-select{
     min-width:105px;
+    font-weight:600;
+    color:#92400e;
+    background:#fffbeb;
+    border-color:#fcd34d;
 }
+
+/* Delete Button */
 
 .delete-btn{
     width:38px;
@@ -196,13 +253,19 @@ td select{
     height:38px;
     min-height:38px;
     padding:0;
-    border-radius:7px;
-    background:#dc2626;
+    border-radius:8px;
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+    color:white;
     font-size:21px;
     line-height:1;
     display:inline-flex;
     align-items:center;
     justify-content:center;
+    box-shadow:0 2px 6px rgba(220,38,38,.22);
+}
+
+.delete-btn:hover{
+    background:linear-gradient(135deg,#dc2626,#b91c1c);
 }
 
 .empty{
@@ -210,6 +273,7 @@ td select{
     padding:25px 15px;
     color:#64748b;
     font-size:14px;
+    background:#f8fffe;
 }
 
 @media(max-width:700px){
@@ -259,6 +323,10 @@ td select{
         min-height:36px;
         font-size:20px;
     }
+
+    .utility-buttons{
+        flex-direction:row;
+    }
 }
 </style>
 </head>
@@ -300,10 +368,35 @@ td select{
             </div>
 
             <div class="field">
-                <button type="button" id="addWorkBtn">Add Work</button>
+                <button type="button"
+                        id="addWorkBtn"
+                        class="add-btn">
+                    Add Work
+                </button>
             </div>
 
         </div>
+
+        <div class="utility-buttons">
+
+            <button type="button"
+                    id="backupBtn"
+                    class="backup-btn">
+                Backup Data
+            </button>
+
+            <button type="button"
+                    id="restoreBtn"
+                    class="restore-btn">
+                Restore Data
+            </button>
+
+        </div>
+
+        <input type="file"
+               id="restoreFile"
+               accept=".json,application/json"
+               style="display:none;">
 
     </div>
 
@@ -312,6 +405,7 @@ td select{
         <div class="table-wrap">
 
             <table>
+
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -362,25 +456,51 @@ try{
 
 }
 
-const workDate = document.getElementById("workDate");
-const workDescription = document.getElementById("workDescription");
-const workTime = document.getElementById("workTime");
-const addWorkBtn = document.getElementById("addWorkBtn");
-const workTableBody = document.getElementById("workTableBody");
-const emptyMessage = document.getElementById("emptyMessage");
+const workDate =
+    document.getElementById("workDate");
 
+const workDescription =
+    document.getElementById("workDescription");
 
-/* Today's date */
+const workTime =
+    document.getElementById("workTime");
+
+const addWorkBtn =
+    document.getElementById("addWorkBtn");
+
+const backupBtn =
+    document.getElementById("backupBtn");
+
+const restoreBtn =
+    document.getElementById("restoreBtn");
+
+const restoreFile =
+    document.getElementById("restoreFile");
+
+const workTableBody =
+    document.getElementById("workTableBody");
+
+const emptyMessage =
+    document.getElementById("emptyMessage");
+
 
 function setToday(){
 
     const today = new Date();
 
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2,"0");
-    const day = String(today.getDate()).padStart(2,"0");
+    const year =
+        today.getFullYear();
 
-    workDate.value = `${year}-${month}-${day}`;
+    const month =
+        String(today.getMonth() + 1)
+        .padStart(2,"0");
+
+    const day =
+        String(today.getDate())
+        .padStart(2,"0");
+
+    workDate.value =
+        `${year}-${month}-${day}`;
 
 }
 
@@ -400,7 +520,9 @@ function saveData(){
 function createId(){
 
     return Date.now().toString()
-        + Math.random().toString(36).slice(2);
+        + Math.random()
+        .toString(36)
+        .slice(2);
 
 }
 
@@ -411,144 +533,247 @@ function renderWorks(){
 
     if(works.length === 0){
 
-        emptyMessage.style.display = "block";
+        emptyMessage.style.display =
+            "block";
+
         return;
 
     }
 
-    emptyMessage.style.display = "none";
+    emptyMessage.style.display =
+        "none";
 
     works.forEach((work,index)=>{
 
-        const tr = document.createElement("tr");
+        const tr =
+            document.createElement("tr");
 
 
         /* Date */
 
-        const dateTd = document.createElement("td");
+        const dateTd =
+            document.createElement("td");
 
-        const dateInput = document.createElement("input");
+        const dateInput =
+            document.createElement("input");
 
         dateInput.type = "date";
-        dateInput.value = work.date || "";
-        dateInput.autocomplete = "off";
+        dateInput.value =
+            work.date || "";
 
-        dateInput.addEventListener("input",function(){
+        dateInput.autocomplete =
+            "off";
 
-            works[index].date = this.value;
-            saveData();
+        dateInput.addEventListener(
+            "input",
+            function(){
 
-        });
+                works[index].date =
+                    this.value;
 
-        dateTd.appendChild(dateInput);
+                saveData();
+
+            }
+        );
+
+        dateTd.appendChild(
+            dateInput
+        );
 
 
         /* Description */
 
-        const descriptionTd = document.createElement("td");
+        const descriptionTd =
+            document.createElement("td");
 
-        const descriptionInput = document.createElement("input");
+        const descriptionInput =
+            document.createElement("input");
 
-        descriptionInput.type = "text";
-        descriptionInput.value = work.description || "";
-        descriptionInput.autocomplete = "off";
-        descriptionInput.placeholder = "Work description";
+        descriptionInput.type =
+            "text";
 
-        descriptionInput.addEventListener("input",function(){
+        descriptionInput.value =
+            work.description || "";
 
-            works[index].description = this.value;
-            saveData();
+        descriptionInput.autocomplete =
+            "off";
 
-        });
+        descriptionInput.placeholder =
+            "Work description";
 
-        descriptionTd.appendChild(descriptionInput);
+        descriptionInput.addEventListener(
+            "input",
+            function(){
+
+                works[index].description =
+                    this.value;
+
+                saveData();
+
+            }
+        );
+
+        descriptionTd.appendChild(
+            descriptionInput
+        );
 
 
         /* Time */
 
-        const timeTd = document.createElement("td");
+        const timeTd =
+            document.createElement("td");
 
-        const timeInput = document.createElement("input");
+        const timeInput =
+            document.createElement("input");
 
-        timeInput.type = "text";
-        timeInput.value = work.time || "";
-        timeInput.autocomplete = "off";
-        timeInput.placeholder = "Time";
+        timeInput.type =
+            "text";
 
-        timeInput.addEventListener("input",function(){
+        timeInput.value =
+            work.time || "";
 
-            works[index].time = this.value;
-            saveData();
+        timeInput.autocomplete =
+            "off";
 
-        });
+        timeInput.placeholder =
+            "Time";
 
-        timeTd.appendChild(timeInput);
+        timeInput.addEventListener(
+            "input",
+            function(){
+
+                works[index].time =
+                    this.value;
+
+                saveData();
+
+            }
+        );
+
+        timeTd.appendChild(
+            timeInput
+        );
 
 
         /* Action */
 
-        const actionTd = document.createElement("td");
+        const actionTd =
+            document.createElement("td");
 
-        const actionSelect = document.createElement("select");
+        const actionSelect =
+            document.createElement("select");
 
-        actionSelect.className = "action-select";
-
-        const pendingOption = document.createElement("option");
-
-        pendingOption.value = "Pending";
-        pendingOption.textContent = "Pending";
+        actionSelect.className =
+            "action-select";
 
 
-        const completedOption = document.createElement("option");
+        const pendingOption =
+            document.createElement("option");
 
-        completedOption.value = "Completed";
-        completedOption.textContent = "Completed";
+        pendingOption.value =
+            "Pending";
 
-
-        const partialOption = document.createElement("option");
-
-        partialOption.value = "Partial";
-        partialOption.textContent = "Partial";
+        pendingOption.textContent =
+            "Pending";
 
 
-        actionSelect.appendChild(pendingOption);
-        actionSelect.appendChild(completedOption);
-        actionSelect.appendChild(partialOption);
+        const completedOption =
+            document.createElement("option");
 
-        actionSelect.value = work.action || "Pending";
+        completedOption.value =
+            "Completed";
+
+        completedOption.textContent =
+            "Completed";
 
 
-        actionSelect.addEventListener("change",function(){
+        const partialOption =
+            document.createElement("option");
 
-            works[index].action = this.value;
-            saveData();
+        partialOption.value =
+            "Partial";
 
-        });
+        partialOption.textContent =
+            "Partial";
 
-        actionTd.appendChild(actionSelect);
+
+        actionSelect.appendChild(
+            pendingOption
+        );
+
+        actionSelect.appendChild(
+            completedOption
+        );
+
+        actionSelect.appendChild(
+            partialOption
+        );
+
+
+        actionSelect.value =
+            work.action || "Pending";
+
+
+        actionSelect.addEventListener(
+            "change",
+            function(){
+
+                works[index].action =
+                    this.value;
+
+                updateActionColor(this);
+
+                saveData();
+
+            }
+        );
+
+
+        actionTd.appendChild(
+            actionSelect
+        );
 
 
         /* Delete */
 
-        const deleteTd = document.createElement("td");
+        const deleteTd =
+            document.createElement("td");
 
-        const deleteBtn = document.createElement("button");
+        const deleteBtn =
+            document.createElement("button");
 
-        deleteBtn.type = "button";
-        deleteBtn.className = "delete-btn";
-        deleteBtn.textContent = "×";
-        deleteBtn.setAttribute("aria-label","Delete");
+        deleteBtn.type =
+            "button";
 
-        deleteBtn.addEventListener("click",function(){
+        deleteBtn.className =
+            "delete-btn";
 
-            works.splice(index,1);
+        deleteBtn.textContent =
+            "×";
 
-            saveData();
-            renderWorks();
+        deleteBtn.setAttribute(
+            "aria-label",
+            "Delete"
+        );
 
-        });
 
-        deleteTd.appendChild(deleteBtn);
+        deleteBtn.addEventListener(
+            "click",
+            function(){
+
+                works.splice(index,1);
+
+                saveData();
+
+                renderWorks();
+
+            }
+        );
+
+
+        deleteTd.appendChild(
+            deleteBtn
+        );
 
 
         tr.appendChild(dateTd);
@@ -559,21 +784,75 @@ function renderWorks(){
 
         workTableBody.appendChild(tr);
 
+        updateActionColor(
+            actionSelect
+        );
+
     });
+
+}
+
+
+function updateActionColor(select){
+
+    if(select.value === "Completed"){
+
+        select.style.background =
+            "#ecfdf5";
+
+        select.style.borderColor =
+            "#6ee7b7";
+
+        select.style.color =
+            "#047857";
+
+    }
+
+    else if(select.value === "Partial"){
+
+        select.style.background =
+            "#fff7ed";
+
+        select.style.borderColor =
+            "#fdba74";
+
+        select.style.color =
+            "#c2410c";
+
+    }
+
+    else{
+
+        select.style.background =
+            "#fffbeb";
+
+        select.style.borderColor =
+            "#fcd34d";
+
+        select.style.color =
+            "#92400e";
+
+    }
 
 }
 
 
 function addWork(){
 
-    const date = workDate.value.trim();
-    const description = workDescription.value.trim();
-    const time = workTime.value.trim();
+    const date =
+        workDate.value.trim();
+
+    const description =
+        workDescription.value.trim();
+
+    const time =
+        workTime.value.trim();
 
 
     if(!date){
 
         workDate.focus();
+
         return;
 
     }
@@ -582,36 +861,37 @@ function addWork(){
     if(!description){
 
         workDescription.focus();
+
         return;
 
     }
 
 
-    /* Time is optional */
-
-
     works.push({
 
         id:createId(),
+
         date:date,
+
         description:description,
+
         time:time,
+
         action:"Pending"
 
     });
 
 
     saveData();
+
     renderWorks();
 
 
-    /*
-       Keep selected date for next entry.
-       Clear only description and time.
-    */
+    workDescription.value =
+        "";
 
-    workDescription.value = "";
-    workTime.value = "";
+    workTime.value =
+        "";
 
     workDescription.focus();
 
@@ -624,53 +904,298 @@ addWorkBtn.addEventListener(
 );
 
 
-/* Enter key moves to next field */
+/* =========================
+   BACKUP
+========================= */
+
+backupBtn.addEventListener(
+    "click",
+    function(){
+
+        const backupData = {
+
+            app:"Work Planner",
+
+            version:1,
+
+            backupDate:
+                new Date().toISOString(),
+
+            works:works
+
+        };
+
+
+        const json =
+            JSON.stringify(
+                backupData,
+                null,
+                2
+            );
+
+
+        const blob =
+            new Blob(
+                [json],
+                {
+                    type:
+                    "application/json"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(blob);
+
+
+        const link =
+            document.createElement("a");
+
+
+        link.href = url;
+
+
+        const today =
+            new Date();
+
+
+        const dateName =
+            today.getFullYear()
+            + "-"
+            + String(
+                today.getMonth()+1
+              ).padStart(2,"0")
+            + "-"
+            + String(
+                today.getDate()
+              ).padStart(2,"0");
+
+
+        link.download =
+            "Work-Planner-Backup-"
+            + dateName
+            + ".json";
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        URL.revokeObjectURL(url);
+
+    }
+);
+
+
+/* =========================
+   RESTORE
+========================= */
+
+restoreBtn.addEventListener(
+    "click",
+    function(){
+
+        restoreFile.value = "";
+
+        restoreFile.click();
+
+    }
+);
+
+
+restoreFile.addEventListener(
+    "change",
+    function(){
+
+        const file =
+            this.files[0];
+
+
+        if(!file){
+            return;
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(event){
+
+                try{
+
+                    const data =
+                        JSON.parse(
+                            event.target.result
+                        );
+
+
+                    let restoredWorks =
+                        null;
+
+
+                    if(Array.isArray(data)){
+
+                        restoredWorks =
+                            data;
+
+                    }
+
+                    else if(
+                        data &&
+                        Array.isArray(data.works)
+                    ){
+
+                        restoredWorks =
+                            data.works;
+
+                    }
+
+
+                    if(!restoredWorks){
+
+                        alert(
+                            "Invalid backup file."
+                        );
+
+                        return;
+
+                    }
+
+
+                    const confirmed =
+                        confirm(
+                            "Restore this backup? Current data will be replaced."
+                        );
+
+
+                    if(!confirmed){
+
+                        return;
+
+                    }
+
+
+                    works =
+                        restoredWorks;
+
+
+                    saveData();
+
+                    renderWorks();
+
+
+                    alert(
+                        "Backup restored successfully."
+                    );
+
+                }
+
+                catch(error){
+
+                    alert(
+                        "Could not restore the backup file."
+                    );
+
+                }
+
+            };
+
+
+        reader.readAsText(file);
+
+    }
+);
+
+
+/* Enter Navigation */
 
 const formFields = [
 
     workDate,
+
     workDescription,
+
     workTime,
+
     addWorkBtn
 
 ];
 
 
-formFields.forEach((field,index)=>{
+formFields.forEach(
+    (field,index)=>{
 
-    field.addEventListener(
-        "keydown",
-        function(event){
+        field.addEventListener(
+            "keydown",
+            function(event){
 
-            if(event.key === "Enter"){
+                if(event.key === "Enter"){
 
-                event.preventDefault();
-
-
-                if(field === addWorkBtn){
-
-                    addWork();
-                    return;
-
-                }
+                    event.preventDefault();
 
 
-                const nextField =
-                    formFields[index + 1];
+                    if(field === addWorkBtn){
+
+                        addWork();
+
+                        return;
+
+                    }
 
 
-                if(nextField){
+                    const nextField =
+                        formFields[index + 1];
 
-                    nextField.focus();
+
+                    if(nextField){
+
+                        nextField.focus();
+
+                    }
 
                 }
 
             }
+        );
+
+    }
+);
+
+
+/* Service Worker */
+
+if("serviceWorker" in navigator){
+
+    window.addEventListener(
+        "load",
+        function(){
+
+            navigator.serviceWorker
+                .register("sw.js")
+                .catch(
+                    function(error){
+
+                        console.log(
+                            "Service Worker registration failed:",
+                            error
+                        );
+
+                    }
+                );
 
         }
     );
 
-});
+}
 
 
 renderWorks();
