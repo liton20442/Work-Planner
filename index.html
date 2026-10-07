@@ -949,6 +949,12 @@ workTableBody.addEventListener(
                 renderWorks();
 
 
+                /*
+                 * NEW ROW:
+                 * Select Description and
+                 * open iPhone keyboard.
+                 */
+
                 setTimeout(
                     function(){
 
@@ -958,7 +964,6 @@ workTableBody.addEventListener(
                                 "tr"
                             );
 
-
                         const newRow =
                             rows[
                                 rows.length - 1
@@ -967,22 +972,35 @@ workTableBody.addEventListener(
 
                         if(newRow){
 
-                            const inputs =
+                            const newInputs =
                                 newRow
                                 .querySelectorAll(
                                     "input"
                                 );
 
 
-                            /*
-                             * NEW ROW:
-                             * CURSOR GOES TO
-                             * WORK DESCRIPTION
-                             */
+                            if(newInputs[1]){
 
-                            if(inputs[1]){
+                                newInputs[1].focus();
 
-                                inputs[1].focus();
+                                setTimeout(
+                                    function(){
+
+                                        newInputs[1].click();
+
+                                        try{
+
+                                            newInputs[1]
+                                                .setSelectionRange(
+                                                    newInputs[1].value.length,
+                                                    newInputs[1].value.length
+                                                );
+
+                                        }catch(error){}
+
+                                    },
+                                    100
+                                );
 
                             }
 
