@@ -110,7 +110,7 @@ thead{
 }
 
 th{
-    padding:8px 2px;
+    padding:8px 1px;
     text-align:left;
     font-size:13px;
     font-weight:700;
@@ -128,7 +128,7 @@ td{
     background:#ffffff;
 }
 
-/* Column widths total = 100% */
+/* Exact column widths */
 th:nth-child(1),
 td:nth-child(1){
     width:17%;
@@ -150,17 +150,19 @@ td:nth-child(4){
     text-align:center;
 }
 
+/* Reduce space inside input boxes */
 td input{
     width:calc(100% - 2px);
     margin:0 1px;
     min-height:40px;
     border:1px solid #cbd5e1;
     border-radius:8px;
-    padding:7px 6px;
+    padding:7px 4px;
     font-size:17px;
     background:white;
 }
 
+/* Work Description input slightly narrower */
 td:nth-child(2) input{
     width:85%;
 }
@@ -212,7 +214,7 @@ td input:focus{
 
     th{
         font-size:12px;
-        padding:7px 2px;
+        padding:7px 1px;
     }
 
     td{
@@ -223,7 +225,7 @@ td input:focus{
     td input{
         font-size:17px;
         min-height:38px;
-        padding:6px 5px;
+        padding:6px 4px;
     }
 
     .delete-btn{
