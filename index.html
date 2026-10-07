@@ -592,12 +592,6 @@ function renderWorks(){
             "description";
 
 
-        /*
-         * IMPORTANT:
-         * Save directly without renderWorks().
-         * Therefore cursor will not disappear.
-         */
-
         descriptionInput.addEventListener(
             "input",
             function(){
@@ -863,9 +857,7 @@ workTableBody.addEventListener(
             );
 
 
-        /*
-         * DATE → DESCRIPTION
-         */
+        /* DATE → DESCRIPTION */
 
         if(currentIndex === 0){
 
@@ -876,9 +868,7 @@ workTableBody.addEventListener(
         }
 
 
-        /*
-         * DESCRIPTION → TIME
-         */
+        /* DESCRIPTION → TIME */
 
         if(currentIndex === 1){
 
@@ -889,9 +879,7 @@ workTableBody.addEventListener(
         }
 
 
-        /*
-         * TIME → ACTION
-         */
+        /* TIME → ACTION */
 
         if(currentIndex === 2){
 
@@ -912,9 +900,7 @@ workTableBody.addEventListener(
         }
 
 
-        /*
-         * ACTION → NEW ROW
-         */
+        /* ACTION → NEW ROW */
 
         if(currentIndex === 3){
 
@@ -937,11 +923,6 @@ workTableBody.addEventListener(
 
             saveData();
 
-
-            /*
-             * Only create a new row
-             * when this is the last row.
-             */
 
             if(
                 rowIndex ===
@@ -986,15 +967,22 @@ workTableBody.addEventListener(
 
                         if(newRow){
 
-                            const firstInput =
-                                newRow.querySelector(
+                            const inputs =
+                                newRow
+                                .querySelectorAll(
                                     "input"
                                 );
 
 
-                            if(firstInput){
+                            /*
+                             * NEW ROW:
+                             * CURSOR GOES TO
+                             * WORK DESCRIPTION
+                             */
 
-                                firstInput.focus();
+                            if(inputs[1]){
+
+                                inputs[1].focus();
 
                             }
 
@@ -1003,6 +991,8 @@ workTableBody.addEventListener(
                     },
                     50
                 );
+
+                return;
 
             }
 
