@@ -18,6 +18,7 @@
 <title>Work Planner</title>
 
 <style>
+
 *{
     box-sizing:border-box;
 }
@@ -99,6 +100,7 @@ header p{
 table{
     width:100%;
     border-collapse:collapse;
+    border-spacing:0;
     min-width:630px;
     table-layout:fixed;
 }
@@ -108,7 +110,7 @@ thead{
 }
 
 th{
-    padding:8px 4px;
+    padding:8px 2px;
     text-align:left;
     font-size:13px;
     font-weight:700;
@@ -118,7 +120,8 @@ th{
 }
 
 td{
-    padding:2px;
+    padding:0;
+    margin:0;
     font-size:17px;
     border-bottom:1px solid #e5e7eb;
     vertical-align:middle;
@@ -152,7 +155,8 @@ td:nth-child(5){
 }
 
 td input{
-    width:100%;
+    width:calc(100% - 2px);
+    margin:0 1px;
     min-height:40px;
     border:1px solid #cbd5e1;
     border-radius:8px;
@@ -214,12 +218,12 @@ td input:focus{
 
     th{
         font-size:12px;
-        padding:7px 3px;
+        padding:7px 2px;
     }
 
     td{
         font-size:17px;
-        padding:2px;
+        padding:0;
     }
 
     td input{
@@ -235,38 +239,53 @@ td input:focus{
         min-height:36px;
     }
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
+
     <h1>Work Planner</h1>
+
     <p>Daily Work Management</p>
+
 </header>
+
 
 <div class="container">
 
     <div class="utility-buttons">
 
-        <button type="button"
-                id="backupBtn"
-                class="backup-btn">
+        <button
+            type="button"
+            id="backupBtn"
+            class="backup-btn">
+
             Backup Data
+
         </button>
 
-        <button type="button"
-                id="restoreBtn"
-                class="restore-btn">
+
+        <button
+            type="button"
+            id="restoreBtn"
+            class="restore-btn">
+
             Restore Data
+
         </button>
 
     </div>
 
-    <input type="file"
-           id="restoreFile"
-           accept=".json,application/json,.backup"
-           style="display:none;">
+
+    <input
+        type="file"
+        id="restoreFile"
+        accept=".json,application/json,.backup"
+        style="display:none;">
+
 
     <div class="table-card">
 
@@ -275,34 +294,51 @@ td input:focus{
             <table>
 
                 <thead>
+
                     <tr>
+
                         <th>Date</th>
+
                         <th>Work Description</th>
+
                         <th>Time</th>
+
                         <th>Action</th>
+
                         <th>Delete</th>
+
                     </tr>
+
                 </thead>
 
-                <tbody id="workTableBody"></tbody>
+
+                <tbody
+                    id="workTableBody">
+                </tbody>
 
             </table>
 
         </div>
 
-        <div id="emptyMessage"
-             class="empty"
-             style="display:none;">
+
+        <div
+            id="emptyMessage"
+            class="empty"
+            style="display:none;">
+
             No work added yet.
+
         </div>
 
     </div>
 
 </div>
 
+
 <script>
 
-const STORAGE_KEY = "workPlannerDataV1";
+const STORAGE_KEY =
+    "workPlannerDataV1";
 
 let works = [];
 
@@ -312,7 +348,9 @@ let works = [];
 try{
 
     const saved =
-        localStorage.getItem(STORAGE_KEY);
+        localStorage.getItem(
+            STORAGE_KEY
+        );
 
     if(saved){
 
@@ -320,12 +358,15 @@ try{
             JSON.parse(saved);
 
         if(Array.isArray(parsed)){
+
             works = parsed;
+
         }
 
     }
 
-}catch(error){
+}
+catch(error){
 
     works = [];
 
@@ -333,39 +374,62 @@ try{
 
 
 const workTableBody =
-    document.getElementById("workTableBody");
+    document.getElementById(
+        "workTableBody"
+    );
+
 
 const emptyMessage =
-    document.getElementById("emptyMessage");
+    document.getElementById(
+        "emptyMessage"
+    );
+
 
 const backupBtn =
-    document.getElementById("backupBtn");
+    document.getElementById(
+        "backupBtn"
+    );
+
 
 const restoreBtn =
-    document.getElementById("restoreBtn");
+    document.getElementById(
+        "restoreBtn"
+    );
+
 
 const restoreFile =
-    document.getElementById("restoreFile");
+    document.getElementById(
+        "restoreFile"
+    );
 
 
 /* TODAY */
 
 function getToday(){
 
-    const d = new Date();
+    const d =
+        new Date();
 
     const y =
         d.getFullYear();
 
     const m =
-        String(d.getMonth()+1)
-        .padStart(2,"0");
+        String(
+            d.getMonth()+1
+        ).padStart(2,"0");
 
     const day =
-        String(d.getDate())
-        .padStart(2,"0");
+        String(
+            d.getDate()
+        ).padStart(2,"0");
 
-    return y + "-" + m + "-" + day;
+    return (
+        y +
+        "-" +
+        m +
+        "-" +
+        day
+    );
 
 }
 
@@ -381,7 +445,8 @@ function saveData(){
             JSON.stringify(works)
         );
 
-    }catch(error){
+    }
+    catch(error){
 
         console.log(error);
 
@@ -394,10 +459,12 @@ function saveData(){
 
 function createId(){
 
-    return Date.now().toString()
-        + Math.random()
-        .toString(36)
-        .substring(2);
+    return (
+        Date.now().toString() +
+        Math.random()
+            .toString(36)
+            .substring(2)
+    );
 
 }
 
@@ -407,17 +474,30 @@ function createId(){
 function formatTime(value){
 
     value =
-        String(value || "").trim();
+        String(
+            value || ""
+        ).trim();
+
 
     if(value === ""){
+
         return "";
-    }
-
-    if(/^\d+(\.\d+)?$/.test(value)){
-
-        return Number(value).toFixed(2);
 
     }
+
+
+    if(
+        /^\d+(\.\d+)?$/.test(
+            value
+        )
+    ){
+
+        return Number(
+            value
+        ).toFixed(2);
+
+    }
+
 
     return value;
 
@@ -441,6 +521,7 @@ function addNewRow(){
         action:"Pending"
 
     });
+
 
     saveData();
 
@@ -505,6 +586,7 @@ function renderWorks(){
 
     workTableBody.innerHTML = "";
 
+
     if(works.length === 0){
 
         emptyMessage.style.display =
@@ -514,339 +596,390 @@ function renderWorks(){
 
     }
 
+
     emptyMessage.style.display =
         "none";
 
 
-    works.forEach(function(work,index){
+    works.forEach(
+        function(work,index){
 
-        const tr =
-            document.createElement("tr");
+            const tr =
+                document.createElement(
+                    "tr"
+                );
 
 
-        /* DATE */
+            /* DATE */
 
-        const dateTd =
-            document.createElement("td");
+            const dateTd =
+                document.createElement(
+                    "td"
+                );
 
-        const dateInput =
-            document.createElement("input");
 
-        dateInput.type = "date";
+            const dateInput =
+                document.createElement(
+                    "input"
+                );
 
-        dateInput.value =
-            work.date || "";
 
-        dateInput.autocomplete =
-            "off";
+            dateInput.type =
+                "date";
 
-        dateInput.dataset.index =
-            index;
 
-        dateInput.dataset.field =
-            "date";
+            dateInput.value =
+                work.date || "";
 
 
-        dateInput.addEventListener(
-            "input",
-            function(){
+            dateInput.autocomplete =
+                "off";
 
-                works[index].date =
-                    this.value;
 
-                saveData();
+            dateInput.dataset.index =
+                index;
 
-            }
-        );
 
+            dateInput.dataset.field =
+                "date";
 
-        dateTd.appendChild(
-            dateInput
-        );
 
+            dateInput.addEventListener(
+                "input",
+                function(){
 
-        /* WORK DESCRIPTION */
+                    works[index].date =
+                        this.value;
 
-        const descriptionTd =
-            document.createElement("td");
-
-        const descriptionInput =
-            document.createElement("input");
-
-        descriptionInput.type =
-            "text";
-
-        descriptionInput.value =
-            work.description || "";
-
-        descriptionInput.autocomplete =
-            "off";
-
-        descriptionInput.placeholder =
-            "Work description";
-
-        descriptionInput.dataset.index =
-            index;
-
-        descriptionInput.dataset.field =
-            "description";
-
-
-        descriptionInput.addEventListener(
-            "input",
-            function(){
-
-                works[index].description =
-                    this.value;
-
-                saveData();
-
-            }
-        );
-
-
-        descriptionTd.appendChild(
-            descriptionInput
-        );
-
-
-        /* TIME */
-
-        const timeTd =
-            document.createElement("td");
-
-        const timeInput =
-            document.createElement("input");
-
-        timeInput.type =
-            "text";
-
-        timeInput.value =
-            work.time || "";
-
-        timeInput.autocomplete =
-            "off";
-
-        timeInput.placeholder =
-            "Time";
-
-        timeInput.dataset.index =
-            index;
-
-        timeInput.dataset.field =
-            "time";
-
-
-        timeInput.addEventListener(
-            "input",
-            function(){
-
-                works[index].time =
-                    this.value;
-
-                saveData();
-
-            }
-        );
-
-
-        timeInput.addEventListener(
-            "blur",
-            function(){
-
-                this.value =
-                    formatTime(
-                        this.value
-                    );
-
-                works[index].time =
-                    this.value;
-
-                saveData();
-
-            }
-        );
-
-
-        timeTd.appendChild(
-            timeInput
-        );
-
-
-        /* ACTION */
-
-        const actionTd =
-            document.createElement("td");
-
-        const actionInput =
-            document.createElement("input");
-
-        actionInput.type =
-            "text";
-
-        actionInput.value =
-            work.action || "Pending";
-
-        actionInput.autocomplete =
-            "off";
-
-        actionInput.placeholder =
-            "Pending";
-
-        actionInput.className =
-            "action-input";
-
-        actionInput.dataset.index =
-            index;
-
-        actionInput.dataset.field =
-            "action";
-
-
-        actionInput.addEventListener(
-            "input",
-            function(){
-
-                works[index].action =
-                    this.value;
-
-                updateActionColor(this);
-
-                saveData();
-
-            }
-        );
-
-
-        actionInput.addEventListener(
-            "blur",
-            function(){
-
-                if(
-                    this.value.trim() === ""
-                ){
-
-                    this.value =
-                        "Pending";
+                    saveData();
 
                 }
-
-                works[index].action =
-                    this.value;
-
-                updateActionColor(this);
-
-                saveData();
-
-            }
-        );
+            );
 
 
-        actionTd.appendChild(
-            actionInput
-        );
+            dateTd.appendChild(
+                dateInput
+            );
 
 
-        /* DELETE */
+            /* WORK DESCRIPTION */
 
-        const deleteTd =
-            document.createElement("td");
-
-        const deleteBtn =
-            document.createElement("button");
-
-        deleteBtn.type =
-            "button";
-
-        deleteBtn.className =
-            "delete-btn";
-
-        deleteBtn.textContent =
-            "×";
-
-        deleteBtn.setAttribute(
-            "aria-label",
-            "Delete"
-        );
+            const descriptionTd =
+                document.createElement(
+                    "td"
+                );
 
 
-        deleteBtn.addEventListener(
-            "click",
-            function(){
-
-                works.splice(index,1);
-
-                saveData();
-
-                renderWorks();
-
-            }
-        );
+            const descriptionInput =
+                document.createElement(
+                    "input"
+                );
 
 
-        deleteTd.appendChild(
-            deleteBtn
-        );
+            descriptionInput.type =
+                "text";
 
 
-        tr.appendChild(dateTd);
-        tr.appendChild(descriptionTd);
-        tr.appendChild(timeTd);
-        tr.appendChild(actionTd);
-        tr.appendChild(deleteTd);
-
-        workTableBody.appendChild(tr);
-
-        updateActionColor(
-            actionInput
-        );
-
-    });
-
-}
+            descriptionInput.value =
+                work.description || "";
 
 
-/* FOCUS NEW DESCRIPTION */
+            descriptionInput.autocomplete =
+                "off";
 
-function focusNewDescription(){
 
-    const rows =
-        workTableBody.querySelectorAll("tr");
+            descriptionInput.placeholder =
+                "Work description";
 
-    const newRow =
-        rows[rows.length - 1];
 
-    if(!newRow){
-        return;
-    }
+            descriptionInput.dataset.index =
+                index;
 
-    const descriptionInput =
-        newRow.querySelector(
-            'input[data-field="description"]'
-        );
 
-    if(!descriptionInput){
-        return;
-    }
+            descriptionInput.dataset.field =
+                "description";
 
-    descriptionInput.focus();
 
-    try{
+            descriptionInput.addEventListener(
+                "input",
+                function(){
 
-        descriptionInput.click();
+                    works[index].description =
+                        this.value;
 
-    }catch(error){}
+                    saveData();
 
-    try{
+                }
+            );
 
-        descriptionInput.select();
 
-        descriptionInput.setSelectionRange(
-            descriptionInput.value.length,
-            descriptionInput.value.length
-        );
+            descriptionTd.appendChild(
+                descriptionInput
+            );
 
-    }catch(error){}
+
+            /* TIME */
+
+            const timeTd =
+                document.createElement(
+                    "td"
+                );
+
+
+            const timeInput =
+                document.createElement(
+                    "input"
+                );
+
+
+            timeInput.type =
+                "text";
+
+
+            timeInput.value =
+                work.time || "";
+
+
+            timeInput.autocomplete =
+                "off";
+
+
+            timeInput.placeholder =
+                "Time";
+
+
+            timeInput.dataset.index =
+                index;
+
+
+            timeInput.dataset.field =
+                "time";
+
+
+            timeInput.addEventListener(
+                "input",
+                function(){
+
+                    works[index].time =
+                        this.value;
+
+                    saveData();
+
+                }
+            );
+
+
+            timeInput.addEventListener(
+                "blur",
+                function(){
+
+                    this.value =
+                        formatTime(
+                            this.value
+                        );
+
+
+                    works[index].time =
+                        this.value;
+
+
+                    saveData();
+
+                }
+            );
+
+
+            timeTd.appendChild(
+                timeInput
+            );
+
+
+            /* ACTION */
+
+            const actionTd =
+                document.createElement(
+                    "td"
+                );
+
+
+            const actionInput =
+                document.createElement(
+                    "input"
+                );
+
+
+            actionInput.type =
+                "text";
+
+
+            actionInput.value =
+                work.action ||
+                "Pending";
+
+
+            actionInput.autocomplete =
+                "off";
+
+
+            actionInput.placeholder =
+                "Pending";
+
+
+            actionInput.className =
+                "action-input";
+
+
+            actionInput.dataset.index =
+                index;
+
+
+            actionInput.dataset.field =
+                "action";
+
+
+            actionInput.addEventListener(
+                "input",
+                function(){
+
+                    works[index].action =
+                        this.value;
+
+                    updateActionColor(
+                        this
+                    );
+
+                    saveData();
+
+                }
+            );
+
+
+            actionInput.addEventListener(
+                "blur",
+                function(){
+
+                    if(
+                        this.value
+                            .trim() === ""
+                    ){
+
+                        this.value =
+                            "Pending";
+
+                    }
+
+
+                    works[index].action =
+                        this.value;
+
+
+                    updateActionColor(
+                        this
+                    );
+
+
+                    saveData();
+
+                }
+            );
+
+
+            actionTd.appendChild(
+                actionInput
+            );
+
+
+            /* DELETE */
+
+            const deleteTd =
+                document.createElement(
+                    "td"
+                );
+
+
+            const deleteBtn =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteBtn.type =
+                "button";
+
+
+            deleteBtn.className =
+                "delete-btn";
+
+
+            deleteBtn.textContent =
+                "×";
+
+
+            deleteBtn.setAttribute(
+                "aria-label",
+                "Delete"
+            );
+
+
+            deleteBtn.addEventListener(
+                "click",
+                function(){
+
+                    works.splice(
+                        index,
+                        1
+                    );
+
+
+                    saveData();
+
+                    renderWorks();
+
+                }
+            );
+
+
+            deleteTd.appendChild(
+                deleteBtn
+            );
+
+
+            tr.appendChild(
+                dateTd
+            );
+
+
+            tr.appendChild(
+                descriptionTd
+            );
+
+
+            tr.appendChild(
+                timeTd
+            );
+
+
+            tr.appendChild(
+                actionTd
+            );
+
+
+            tr.appendChild(
+                deleteTd
+            );
+
+
+            workTableBody.appendChild(
+                tr
+            );
+
+
+            updateActionColor(
+                actionInput
+            );
+
+        }
+    );
 
 }
 
@@ -858,17 +991,23 @@ workTableBody.addEventListener(
     function(event){
 
         if(event.key !== "Enter"){
+
             return;
+
         }
 
+
         event.preventDefault();
+
 
         const current =
             event.target;
 
+
         if(
             !current ||
-            current.tagName !== "INPUT"
+            current.tagName !==
+                "INPUT"
         ){
 
             return;
@@ -877,10 +1016,15 @@ workTableBody.addEventListener(
 
 
         const row =
-            current.closest("tr");
+            current.closest(
+                "tr"
+            );
+
 
         if(!row){
+
             return;
+
         }
 
 
@@ -893,7 +1037,9 @@ workTableBody.addEventListener(
 
 
         const currentIndex =
-            inputs.indexOf(current);
+            inputs.indexOf(
+                current
+            );
 
 
         const rowIndex =
@@ -904,7 +1050,9 @@ workTableBody.addEventListener(
 
         /* DATE → DESCRIPTION */
 
-        if(currentIndex === 0){
+        if(
+            currentIndex === 0
+        ){
 
             inputs[1].focus();
 
@@ -915,7 +1063,9 @@ workTableBody.addEventListener(
 
         /* DESCRIPTION → TIME */
 
-        if(currentIndex === 1){
+        if(
+            currentIndex === 1
+        ){
 
             inputs[2].focus();
 
@@ -926,17 +1076,22 @@ workTableBody.addEventListener(
 
         /* TIME → ACTION */
 
-        if(currentIndex === 2){
+        if(
+            currentIndex === 2
+        ){
 
             current.value =
                 formatTime(
                     current.value
                 );
 
+
             works[rowIndex].time =
                 current.value;
 
+
             saveData();
+
 
             inputs[3].focus();
 
@@ -947,10 +1102,13 @@ workTableBody.addEventListener(
 
         /* ACTION → NEW ROW */
 
-        if(currentIndex === 3){
+        if(
+            currentIndex === 3
+        ){
 
             if(
-                current.value.trim() === ""
+                current.value
+                    .trim() === ""
             ){
 
                 current.value =
@@ -962,12 +1120,19 @@ workTableBody.addEventListener(
             works[rowIndex].action =
                 current.value;
 
+
             updateActionColor(
                 current
             );
 
+
             saveData();
 
+
+            /*
+             * Only create a new row
+             * if this is the last row.
+             */
 
             if(
                 rowIndex ===
@@ -991,38 +1156,56 @@ workTableBody.addEventListener(
 
                 saveData();
 
+
+                /*
+                 * Render immediately.
+                 * No setTimeout.
+                 */
+
                 renderWorks();
 
 
                 /*
-                 * নতুন Row তৈরি হওয়ার পর
-                 * Description-এ focus।
+                 * IMPORTANT:
+                 * Focus immediately during
+                 * the same Enter event.
                  */
 
-                setTimeout(
-                    function(){
-
-                        focusNewDescription();
-
-                    },
-                    50
-                );
+                const rows =
+                    workTableBody
+                    .querySelectorAll(
+                        "tr"
+                    );
 
 
-                /*
-                 * iPhone Safari-তে
-                 * keyboard চালু রাখার জন্য
-                 * দ্বিতীয়বার focus।
-                 */
+                const newRow =
+                    rows[
+                        rows.length - 1
+                    ];
 
-                setTimeout(
-                    function(){
 
-                        focusNewDescription();
+                if(newRow){
 
-                    },
-                    150
-                );
+                    const newInputs =
+                        newRow
+                        .querySelectorAll(
+                            "input"
+                        );
+
+
+                    const descriptionInput =
+                        newInputs[1];
+
+
+                    if(
+                        descriptionInput
+                    ){
+
+                        descriptionInput.focus();
+
+                    }
+
+                }
 
 
                 return;
@@ -1048,7 +1231,8 @@ backupBtn.addEventListener(
             version:1,
 
             backupDate:
-                new Date().toISOString(),
+                new Date()
+                    .toISOString(),
 
             works:works
 
@@ -1068,7 +1252,7 @@ backupBtn.addEventListener(
                 [json],
                 {
                     type:
-                    "application/octet-stream"
+                        "application/octet-stream"
                 }
             );
 
@@ -1080,21 +1264,29 @@ backupBtn.addEventListener(
 
 
         const link =
-            document.createElement("a");
+            document.createElement(
+                "a"
+            );
 
-        link.href = url;
+
+        link.href =
+            url;
 
 
-        const d = new Date();
+        const d =
+            new Date();
+
 
         const dateName =
             d.getFullYear()
             + "-"
-            + String(d.getMonth()+1)
-              .padStart(2,"0")
+            + String(
+                d.getMonth()+1
+            ).padStart(2,"0")
             + "-"
-            + String(d.getDate())
-              .padStart(2,"0");
+            + String(
+                d.getDate()
+            ).padStart(2,"0");
 
 
         link.download =
@@ -1103,18 +1295,29 @@ backupBtn.addEventListener(
             + ".backup";
 
 
-        document.body.appendChild(link);
+        document.body.appendChild(
+            link
+        );
+
 
         link.click();
 
-        document.body.removeChild(link);
+
+        document.body.removeChild(
+            link
+        );
 
 
-        setTimeout(function(){
+        setTimeout(
+            function(){
 
-            URL.revokeObjectURL(url);
+                URL.revokeObjectURL(
+                    url
+                );
 
-        },1000);
+            },
+            1000
+        );
 
     }
 );
@@ -1126,7 +1329,8 @@ restoreBtn.addEventListener(
     "click",
     function(){
 
-        restoreFile.value = "";
+        restoreFile.value =
+            "";
 
         restoreFile.click();
 
@@ -1141,8 +1345,11 @@ restoreFile.addEventListener(
         const file =
             this.files[0];
 
+
         if(!file){
+
             return;
+
         }
 
 
@@ -1165,7 +1372,11 @@ restoreFile.addEventListener(
                         null;
 
 
-                    if(Array.isArray(data)){
+                    if(
+                        Array.isArray(
+                            data
+                        )
+                    ){
 
                         restoredWorks =
                             data;
@@ -1173,7 +1384,9 @@ restoreFile.addEventListener(
                     }
                     else if(
                         data &&
-                        Array.isArray(data.works)
+                        Array.isArray(
+                            data.works
+                        )
                     ){
 
                         restoredWorks =
@@ -1182,7 +1395,9 @@ restoreFile.addEventListener(
                     }
 
 
-                    if(!restoredWorks){
+                    if(
+                        !restoredWorks
+                    ){
 
                         alert(
                             "Invalid backup file."
@@ -1193,9 +1408,11 @@ restoreFile.addEventListener(
                     }
 
 
-                    if(!confirm(
-                        "Restore this backup? Current data will be replaced."
-                    )){
+                    if(
+                        !confirm(
+                            "Restore this backup? Current data will be replaced."
+                        )
+                    ){
 
                         return;
 
@@ -1205,9 +1422,12 @@ restoreFile.addEventListener(
                     works =
                         restoredWorks;
 
+
                     saveData();
 
+
                     renderWorks();
+
 
                     alert(
                         "Backup restored successfully."
@@ -1225,7 +1445,9 @@ restoreFile.addEventListener(
             };
 
 
-        reader.readAsText(file);
+        reader.readAsText(
+            file
+        );
 
     }
 );
@@ -1233,22 +1455,28 @@ restoreFile.addEventListener(
 
 /* SERVICE WORKER */
 
-if("serviceWorker" in navigator){
+if(
+    "serviceWorker" in navigator
+){
 
     window.addEventListener(
         "load",
         function(){
 
             navigator.serviceWorker
-                .register("sw.js")
-                .catch(function(error){
+                .register(
+                    "sw.js"
+                )
+                .catch(
+                    function(error){
 
-                    console.log(
-                        "Service Worker registration failed:",
-                        error
-                    );
+                        console.log(
+                            "Service Worker registration failed:",
+                            error
+                        );
 
-                });
+                    }
+                );
 
         }
     );
@@ -1258,7 +1486,9 @@ if("serviceWorker" in navigator){
 
 /* START */
 
-if(works.length === 0){
+if(
+    works.length === 0
+){
 
     addNewRow();
 
