@@ -58,71 +58,23 @@ header p{
     padding:9px;
 }
 
-.form-card{
-    background:#ffffff;
-    border-radius:14px;
-    padding:10px;
-    box-shadow:0 4px 14px rgba(15,118,110,.10);
-    margin-bottom:12px;
-    border:1px solid #d9f0ed;
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:1fr 2fr 1fr auto;
-    gap:8px;
-    align-items:end;
-}
-
-.field{
+.utility-buttons{
     display:flex;
-    flex-direction:column;
+    gap:8px;
+    margin-bottom:12px;
 }
 
-.field label{
-    font-size:13px;
-    font-weight:600;
-    margin-bottom:5px;
-    color:#155e75;
-}
-
-input,
-select,
-button{
+.utility-buttons button{
+    flex:1;
     width:100%;
     min-height:44px;
-    border:1px solid #cbd5e1;
-    border-radius:8px;
-    padding:8px 10px;
-    font-size:16px;
-    background:white;
-}
-
-input:focus,
-select:focus{
-    outline:none;
-    border-color:#0d9488;
-    box-shadow:0 0 0 3px rgba(13,148,136,.13);
-}
-
-button{
-    color:white;
     border:none;
+    border-radius:8px;
+    color:white;
+    font-size:16px;
     font-weight:700;
     cursor:pointer;
-    padding-left:16px;
-    padding-right:16px;
     box-shadow:0 3px 8px rgba(0,0,0,.15);
-}
-
-button:active{
-    transform:scale(.97);
-}
-
-/* Solid Button Colors Only */
-
-.add-btn{
-    background:#0d9488;
 }
 
 .backup-btn{
@@ -133,14 +85,8 @@ button:active{
     background:#7c3aed;
 }
 
-.utility-buttons{
-    display:flex;
-    gap:8px;
-    margin-top:9px;
-}
-
-.utility-buttons button{
-    flex:1;
+.utility-buttons button:active{
+    transform:scale(.97);
 }
 
 .table-card{
@@ -221,9 +167,20 @@ td:nth-child(5){
 
 td input,
 td select{
+    width:100%;
     min-height:40px;
-    font-size:17px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
     padding:7px 8px;
+    font-size:17px;
+    background:white;
+}
+
+td input:focus,
+td select:focus{
+    outline:none;
+    border-color:#0d9488;
+    box-shadow:0 0 0 3px rgba(13,148,136,.13);
 }
 
 .action-select{
@@ -240,6 +197,7 @@ td select{
     height:38px;
     min-height:38px;
     padding:0;
+    border:none;
     border-radius:8px;
     background:#ef4444;
     color:white;
@@ -251,8 +209,8 @@ td select{
     box-shadow:0 2px 6px rgba(220,38,38,.22);
 }
 
-.delete-btn:hover{
-    background:#dc2626;
+.delete-btn:active{
+    transform:scale(.95);
 }
 
 .empty{
@@ -267,15 +225,6 @@ td select{
 
     .container{
         padding:9px;
-    }
-
-    .form-grid{
-        grid-template-columns:1fr;
-        gap:8px;
-    }
-
-    .form-card{
-        padding:10px;
     }
 
     header h1{
@@ -310,10 +259,6 @@ td select{
         min-height:36px;
         font-size:20px;
     }
-
-    .utility-buttons{
-        flex-direction:row;
-    }
 }
 </style>
 </head>
@@ -327,65 +272,26 @@ td select{
 
 <div class="container">
 
-    <div class="form-card">
+    <div class="utility-buttons">
 
-        <div class="form-grid">
+        <button type="button"
+                id="backupBtn"
+                class="backup-btn">
+            Backup Data
+        </button>
 
-            <div class="field">
-                <label for="workDate">Date</label>
-                <input type="date"
-                       id="workDate"
-                       autocomplete="off">
-            </div>
-
-            <div class="field">
-                <label for="workDescription">Work Description</label>
-                <input type="text"
-                       id="workDescription"
-                       autocomplete="off"
-                       placeholder="Enter work description">
-            </div>
-
-            <div class="field">
-                <label for="workTime">Time</label>
-                <input type="text"
-                       id="workTime"
-                       autocomplete="off"
-                       placeholder="Enter time">
-            </div>
-
-            <div class="field">
-                <button type="button"
-                        id="addWorkBtn"
-                        class="add-btn">
-                    Add Work
-                </button>
-            </div>
-
-        </div>
-
-        <div class="utility-buttons">
-
-            <button type="button"
-                    id="backupBtn"
-                    class="backup-btn">
-                Backup Data
-            </button>
-
-            <button type="button"
-                    id="restoreBtn"
-                    class="restore-btn">
-                Restore Data
-            </button>
-
-        </div>
-
-        <input type="file"
-               id="restoreFile"
-               accept=".json,application/json,.backup"
-               style="display:none;">
+        <button type="button"
+                id="restoreBtn"
+                class="restore-btn">
+            Restore Data
+        </button>
 
     </div>
+
+    <input type="file"
+           id="restoreFile"
+           accept=".json,application/json,.backup"
+           style="display:none;">
 
     <div class="table-card">
 
@@ -445,18 +351,6 @@ try{
 
 }
 
-const workDate =
-    document.getElementById("workDate");
-
-const workDescription =
-    document.getElementById("workDescription");
-
-const workTime =
-    document.getElementById("workTime");
-
-const addWorkBtn =
-    document.getElementById("addWorkBtn");
-
 const backupBtn =
     document.getElementById("backupBtn");
 
@@ -471,29 +365,6 @@ const workTableBody =
 
 const emptyMessage =
     document.getElementById("emptyMessage");
-
-
-function setToday(){
-
-    const today = new Date();
-
-    const year =
-        today.getFullYear();
-
-    const month =
-        String(today.getMonth() + 1)
-        .padStart(2,"0");
-
-    const day =
-        String(today.getDate())
-        .padStart(2,"0");
-
-    workDate.value =
-        `${year}-${month}-${day}`;
-
-}
-
-setToday();
 
 
 function saveData(){
@@ -516,11 +387,31 @@ function createId(){
 }
 
 
+function todayString(){
+
+    const today = new Date();
+
+    const year =
+        today.getFullYear();
+
+    const month =
+        String(today.getMonth() + 1)
+        .padStart(2,"0");
+
+    const day =
+        String(today.getDate())
+        .padStart(2,"0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
 /* TIME FORMAT */
 
 function formatTime(value){
 
-    value = value.trim();
+    value = String(value || "").trim();
 
     if(value === ""){
         return "";
@@ -540,6 +431,37 @@ function formatTime(value){
 }
 
 
+/* CREATE EMPTY ROW */
+
+function createNewRow(){
+
+    const newWork = {
+
+        id:createId(),
+
+        date:todayString(),
+
+        description:"",
+
+        time:"",
+
+        action:"Pending"
+
+    };
+
+    works.push(newWork);
+
+    saveData();
+
+    renderWorks();
+
+    focusFirstEmptyRow();
+
+}
+
+
+/* RENDER */
+
 function renderWorks(){
 
     workTableBody.innerHTML = "";
@@ -549,12 +471,13 @@ function renderWorks(){
         emptyMessage.style.display =
             "block";
 
-        return;
+    }else{
+
+        emptyMessage.style.display =
+            "none";
 
     }
 
-    emptyMessage.style.display =
-        "none";
 
     works.forEach((work,index)=>{
 
@@ -562,7 +485,7 @@ function renderWorks(){
             document.createElement("tr");
 
 
-        /* Date */
+        /* DATE */
 
         const dateTd =
             document.createElement("td");
@@ -577,6 +500,12 @@ function renderWorks(){
 
         dateInput.autocomplete =
             "off";
+
+        dateInput.dataset.index =
+            index;
+
+        dateInput.dataset.field =
+            "date";
 
         dateInput.addEventListener(
             "input",
@@ -595,7 +524,7 @@ function renderWorks(){
         );
 
 
-        /* Description */
+        /* DESCRIPTION */
 
         const descriptionTd =
             document.createElement("td");
@@ -615,6 +544,12 @@ function renderWorks(){
         descriptionInput.placeholder =
             "Work description";
 
+        descriptionInput.dataset.index =
+            index;
+
+        descriptionInput.dataset.field =
+            "description";
+
         descriptionInput.addEventListener(
             "input",
             function(){
@@ -632,7 +567,7 @@ function renderWorks(){
         );
 
 
-        /* Time */
+        /* TIME */
 
         const timeTd =
             document.createElement("td");
@@ -652,6 +587,25 @@ function renderWorks(){
         timeInput.placeholder =
             "Time";
 
+        timeInput.dataset.index =
+            index;
+
+        timeInput.dataset.field =
+            "time";
+
+
+        timeInput.addEventListener(
+            "input",
+            function(){
+
+                works[index].time =
+                    this.value;
+
+                saveData();
+
+            }
+        );
+
 
         timeInput.addEventListener(
             "blur",
@@ -669,47 +623,12 @@ function renderWorks(){
         );
 
 
-        timeInput.addEventListener(
-            "keydown",
-            function(event){
-
-                if(event.key === "Enter"){
-
-                    event.preventDefault();
-
-                    this.value =
-                        formatTime(this.value);
-
-                    works[index].time =
-                        this.value;
-
-                    saveData();
-
-                }
-
-            }
-        );
-
-
-        timeInput.addEventListener(
-            "input",
-            function(){
-
-                works[index].time =
-                    this.value;
-
-                saveData();
-
-            }
-        );
-
-
         timeTd.appendChild(
             timeInput
         );
 
 
-        /* Action */
+        /* ACTION */
 
         const actionTd =
             document.createElement("td");
@@ -719,6 +638,12 @@ function renderWorks(){
 
         actionSelect.className =
             "action-select";
+
+        actionSelect.dataset.index =
+            index;
+
+        actionSelect.dataset.field =
+            "action";
 
 
         const pendingOption =
@@ -788,7 +713,7 @@ function renderWorks(){
         );
 
 
-        /* Delete */
+        /* DELETE */
 
         const deleteTd =
             document.createElement("td");
@@ -847,6 +772,8 @@ function renderWorks(){
 }
 
 
+/* ACTION COLOR */
+
 function updateActionColor(select){
 
     if(select.value === "Completed"){
@@ -891,77 +818,152 @@ function updateActionColor(select){
 }
 
 
-function addWork(){
+/* ENTER NAVIGATION */
 
-    const date =
-        workDate.value.trim();
+function handleEnter(event){
 
-    const description =
-        workDescription.value.trim();
+    if(event.key !== "Enter"){
+        return;
+    }
 
-    const time =
-        formatTime(
-            workTime.value
+    event.preventDefault();
+
+    const element =
+        event.target;
+
+    const index =
+        Number(element.dataset.index);
+
+    const field =
+        element.dataset.field;
+
+
+    /* TIME FORMAT */
+
+    if(field === "time"){
+
+        element.value =
+            formatTime(element.value);
+
+        works[index].time =
+            element.value;
+
+        saveData();
+
+    }
+
+
+    /* FIND CURRENT ROW */
+
+    const row =
+        element.closest("tr");
+
+    if(!row){
+        return;
+    }
+
+
+    const cells =
+        Array.from(
+            row.querySelectorAll(
+                "input,select"
+            )
         );
 
 
-    if(!date){
+    const currentPosition =
+        cells.indexOf(element);
 
-        workDate.focus();
+
+    /* NEXT CELL IN SAME ROW */
+
+    if(currentPosition <
+       cells.length - 1){
+
+        cells[currentPosition + 1]
+            .focus();
 
         return;
 
     }
 
 
-    if(!description){
+    /* LAST CELL OF ROW */
 
-        workDescription.focus();
+    if(index === works.length - 1){
+
+        createNewRow();
 
         return;
 
     }
 
 
-    workTime.value =
-        time;
+    /* NEXT ROW FIRST CELL */
 
+    const nextRow =
+        workTableBody
+        .querySelectorAll("tr")[index + 1];
 
-    works.push({
+    if(nextRow){
 
-        id:createId(),
+        const nextInput =
+            nextRow.querySelector(
+                "input,select"
+            );
 
-        date:date,
+        if(nextInput){
+            nextInput.focus();
+        }
 
-        description:description,
-
-        time:time,
-
-        action:"Pending"
-
-    });
-
-
-    saveData();
-
-    renderWorks();
-
-
-    workDescription.value =
-        "";
-
-    workTime.value =
-        "";
-
-    workDescription.focus();
+    }
 
 }
 
 
-addWorkBtn.addEventListener(
-    "click",
-    addWork
+/* EVENT DELEGATION */
+
+workTableBody.addEventListener(
+    "keydown",
+    handleEnter
 );
+
+
+/* FIRST EMPTY ROW */
+
+function focusFirstEmptyRow(){
+
+    const rows =
+        workTableBody.querySelectorAll("tr");
+
+    if(!rows.length){
+        return;
+    }
+
+    const lastRow =
+        rows[rows.length - 1];
+
+    const firstInput =
+        lastRow.querySelector("input");
+
+    if(firstInput){
+        firstInput.focus();
+    }
+
+}
+
+
+/* START WITH ONE ENTRY ROW */
+
+if(works.length === 0){
+
+    createNewRow();
+
+}else{
+
+    renderWorks();
+
+}
 
 
 /* BACKUP */
@@ -1161,7 +1163,6 @@ restoreFile.addEventListener(
 
                     renderWorks();
 
-
                     alert(
                         "Backup restored successfully."
                     );
@@ -1185,72 +1186,7 @@ restoreFile.addEventListener(
 );
 
 
-/* Enter Navigation */
-
-const formFields = [
-
-    workDate,
-
-    workDescription,
-
-    workTime,
-
-    addWorkBtn
-
-];
-
-
-formFields.forEach(
-    (field,index)=>{
-
-        field.addEventListener(
-            "keydown",
-            function(event){
-
-                if(event.key === "Enter"){
-
-                    event.preventDefault();
-
-
-                    if(field === workTime){
-
-                        workTime.value =
-                            formatTime(
-                                workTime.value
-                            );
-
-                    }
-
-
-                    if(field === addWorkBtn){
-
-                        addWork();
-
-                        return;
-
-                    }
-
-
-                    const nextField =
-                        formFields[index + 1];
-
-
-                    if(nextField){
-
-                        nextField.focus();
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-);
-
-
-/* Service Worker */
+/* SERVICE WORKER */
 
 if("serviceWorker" in navigator){
 
@@ -1275,9 +1211,6 @@ if("serviceWorker" in navigator){
     );
 
 }
-
-
-renderWorks();
 
 </script>
 
