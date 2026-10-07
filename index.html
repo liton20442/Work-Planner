@@ -128,9 +128,6 @@ td{
     background:#ffffff;
 }
 
-
-/* ONLY DATE + DESCRIPTION WIDTH ADJUSTED */
-
 th:nth-child(1),
 td:nth-child(1){
     width:15%;
@@ -157,7 +154,8 @@ td:nth-child(5){
     text-align:center;
 }
 
-td input{
+td input,
+td select{
     width:calc(100% - 2px);
     margin:0 1px;
     min-height:40px;
@@ -168,13 +166,19 @@ td input{
     background:white;
 }
 
-td input:focus{
+td select{
+    appearance:auto;
+    -webkit-appearance:auto;
+}
+
+td input:focus,
+td select:focus{
     outline:none;
     border-color:#0d9488;
     box-shadow:0 0 0 3px rgba(13,148,136,.13);
 }
 
-.action-input{
+.action-select{
     min-width:105px;
     font-weight:600;
     background:#fffbeb;
@@ -229,7 +233,8 @@ td input:focus{
         padding:0;
     }
 
-    td input{
+    td input,
+    td select{
         font-size:17px;
         min-height:38px;
         padding:6px 5px;
@@ -249,46 +254,32 @@ td input:focus{
 <body>
 
 <header>
-
     <h1>Work Planner</h1>
-
     <p>Daily Work Management</p>
-
 </header>
-
 
 <div class="container">
 
     <div class="utility-buttons">
 
-        <button
-            type="button"
-            id="backupBtn"
-            class="backup-btn">
-
+        <button type="button"
+                id="backupBtn"
+                class="backup-btn">
             Backup Data
-
         </button>
 
-
-        <button
-            type="button"
-            id="restoreBtn"
-            class="restore-btn">
-
+        <button type="button"
+                id="restoreBtn"
+                class="restore-btn">
             Restore Data
-
         </button>
 
     </div>
 
-
-    <input
-        type="file"
-        id="restoreFile"
-        accept=".json,application/json,.backup"
-        style="display:none;">
-
+    <input type="file"
+           id="restoreFile"
+           accept=".json,application/json,.backup"
+           style="display:none;">
 
     <div class="table-card">
 
@@ -297,46 +288,30 @@ td input:focus{
             <table>
 
                 <thead>
-
                     <tr>
-
                         <th>Date</th>
-
                         <th>Work Description</th>
-
                         <th>Time</th>
-
                         <th>Action</th>
-
                         <th>Delete</th>
-
                     </tr>
-
                 </thead>
 
-
-                <tbody
-                    id="workTableBody">
-                </tbody>
+                <tbody id="workTableBody"></tbody>
 
             </table>
 
         </div>
 
-
-        <div
-            id="emptyMessage"
-            class="empty"
-            style="display:none;">
-
+        <div id="emptyMessage"
+             class="empty"
+             style="display:none;">
             No work added yet.
-
         </div>
 
     </div>
 
 </div>
-
 
 <script>
 
@@ -344,9 +319,6 @@ const STORAGE_KEY =
     "workPlannerDataV1";
 
 let works = [];
-
-
-/* LOAD DATA */
 
 try{
 
@@ -375,38 +347,30 @@ catch(error){
 
 }
 
-
 const workTableBody =
     document.getElementById(
         "workTableBody"
     );
-
 
 const emptyMessage =
     document.getElementById(
         "emptyMessage"
     );
 
-
 const backupBtn =
     document.getElementById(
         "backupBtn"
     );
-
 
 const restoreBtn =
     document.getElementById(
         "restoreBtn"
     );
 
-
 const restoreFile =
     document.getElementById(
         "restoreFile"
     );
-
-
-/* TODAY */
 
 function getToday(){
 
@@ -436,9 +400,6 @@ function getToday(){
 
 }
 
-
-/* SAVE */
-
 function saveData(){
 
     try{
@@ -457,9 +418,6 @@ function saveData(){
 
 }
 
-
-/* ID */
-
 function createId(){
 
     return (
@@ -471,9 +429,6 @@ function createId(){
 
 }
 
-
-/* TIME FORMAT */
-
 function formatTime(value){
 
     value =
@@ -481,13 +436,11 @@ function formatTime(value){
             value || ""
         ).trim();
 
-
     if(value === ""){
 
         return "";
 
     }
-
 
     if(
         /^\d+(\.\d+)?$/.test(
@@ -501,13 +454,9 @@ function formatTime(value){
 
     }
 
-
     return value;
 
 }
-
-
-/* ADD NEW ROW */
 
 function addNewRow(){
 
@@ -525,70 +474,61 @@ function addNewRow(){
 
     });
 
-
     saveData();
 
     renderWorks();
 
 }
 
-
-/* ACTION COLOR */
-
-function updateActionColor(input){
+function updateActionColor(select){
 
     const value =
-        input.value
+        select.value
         .trim()
         .toLowerCase();
 
-
     if(value === "completed"){
 
-        input.style.background =
+        select.style.background =
             "#ecfdf5";
 
-        input.style.borderColor =
+        select.style.borderColor =
             "#6ee7b7";
 
-        input.style.color =
+        select.style.color =
             "#047857";
 
     }
     else if(value === "partial"){
 
-        input.style.background =
+        select.style.background =
             "#fff7ed";
 
-        input.style.borderColor =
+        select.style.borderColor =
             "#fdba74";
 
-        input.style.color =
+        select.style.color =
             "#c2410c";
 
     }
     else{
 
-        input.style.background =
+        select.style.background =
             "#fffbeb";
 
-        input.style.borderColor =
+        select.style.borderColor =
             "#fcd34d";
 
-        input.style.color =
+        select.style.color =
             "#92400e";
 
     }
 
 }
 
-
-/* RENDER */
-
 function renderWorks(){
 
     workTableBody.innerHTML = "";
-
 
     if(works.length === 0){
 
@@ -599,10 +539,8 @@ function renderWorks(){
 
     }
 
-
     emptyMessage.style.display =
         "none";
-
 
     works.forEach(
         function(work,index){
@@ -612,40 +550,30 @@ function renderWorks(){
                     "tr"
                 );
 
-
-            /* DATE */
-
             const dateTd =
                 document.createElement(
                     "td"
                 );
-
 
             const dateInput =
                 document.createElement(
                     "input"
                 );
 
-
             dateInput.type =
                 "date";
-
 
             dateInput.value =
                 work.date || "";
 
-
             dateInput.autocomplete =
                 "off";
-
 
             dateInput.dataset.index =
                 index;
 
-
             dateInput.dataset.field =
                 "date";
-
 
             dateInput.addEventListener(
                 "input",
@@ -659,49 +587,37 @@ function renderWorks(){
                 }
             );
 
-
             dateTd.appendChild(
                 dateInput
             );
-
-
-            /* WORK DESCRIPTION */
 
             const descriptionTd =
                 document.createElement(
                     "td"
                 );
 
-
             const descriptionInput =
                 document.createElement(
                     "input"
                 );
 
-
             descriptionInput.type =
                 "text";
-
 
             descriptionInput.value =
                 work.description || "";
 
-
             descriptionInput.autocomplete =
                 "off";
-
 
             descriptionInput.placeholder =
                 "Work description";
 
-
             descriptionInput.dataset.index =
                 index;
 
-
             descriptionInput.dataset.field =
                 "description";
-
 
             descriptionInput.addEventListener(
                 "input",
@@ -715,49 +631,37 @@ function renderWorks(){
                 }
             );
 
-
             descriptionTd.appendChild(
                 descriptionInput
             );
-
-
-            /* TIME */
 
             const timeTd =
                 document.createElement(
                     "td"
                 );
 
-
             const timeInput =
                 document.createElement(
                     "input"
                 );
 
-
             timeInput.type =
                 "text";
-
 
             timeInput.value =
                 work.time || "";
 
-
             timeInput.autocomplete =
                 "off";
-
 
             timeInput.placeholder =
                 "Time";
 
-
             timeInput.dataset.index =
                 index;
 
-
             timeInput.dataset.field =
                 "time";
-
 
             timeInput.addEventListener(
                 "input",
@@ -770,7 +674,6 @@ function renderWorks(){
 
                 }
             );
-
 
             timeInput.addEventListener(
                 "blur",
@@ -781,67 +684,73 @@ function renderWorks(){
                             this.value
                         );
 
-
                     works[index].time =
                         this.value;
-
 
                     saveData();
 
                 }
             );
 
-
             timeTd.appendChild(
                 timeInput
             );
-
-
-            /* ACTION */
 
             const actionTd =
                 document.createElement(
                     "td"
                 );
 
-
-            const actionInput =
+            const actionSelect =
                 document.createElement(
-                    "input"
+                    "select"
                 );
 
+            actionSelect.className =
+                "action-select";
 
-            actionInput.type =
-                "text";
-
-
-            actionInput.value =
-                work.action ||
-                "Pending";
-
-
-            actionInput.autocomplete =
-                "off";
-
-
-            actionInput.placeholder =
-                "Pending";
-
-
-            actionInput.className =
-                "action-input";
-
-
-            actionInput.dataset.index =
+            actionSelect.dataset.index =
                 index;
 
-
-            actionInput.dataset.field =
+            actionSelect.dataset.field =
                 "action";
 
+            const actions = [
+                "Pending",
+                "Partial",
+                "Completed"
+            ];
 
-            actionInput.addEventListener(
-                "input",
+            actions.forEach(
+                function(action){
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        action;
+
+                    option.textContent =
+                        action;
+
+                    actionSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+            actionSelect.value =
+                actions.includes(
+                    work.action
+                )
+                ? work.action
+                : "Pending";
+
+            actionSelect.addEventListener(
+                "change",
                 function(){
 
                     works[index].action =
@@ -855,74 +764,34 @@ function renderWorks(){
 
                 }
             );
-
-
-            actionInput.addEventListener(
-                "blur",
-                function(){
-
-                    if(
-                        this.value
-                            .trim() === ""
-                    ){
-
-                        this.value =
-                            "Pending";
-
-                    }
-
-
-                    works[index].action =
-                        this.value;
-
-
-                    updateActionColor(
-                        this
-                    );
-
-
-                    saveData();
-
-                }
-            );
-
 
             actionTd.appendChild(
-                actionInput
+                actionSelect
             );
-
-
-            /* DELETE */
 
             const deleteTd =
                 document.createElement(
                     "td"
                 );
 
-
             const deleteBtn =
                 document.createElement(
                     "button"
                 );
 
-
             deleteBtn.type =
                 "button";
-
 
             deleteBtn.className =
                 "delete-btn";
 
-
             deleteBtn.textContent =
                 "×";
-
 
             deleteBtn.setAttribute(
                 "aria-label",
                 "Delete"
             );
-
 
             deleteBtn.addEventListener(
                 "click",
@@ -933,7 +802,6 @@ function renderWorks(){
                         1
                     );
 
-
                     saveData();
 
                     renderWorks();
@@ -941,53 +809,42 @@ function renderWorks(){
                 }
             );
 
-
             deleteTd.appendChild(
                 deleteBtn
             );
-
 
             tr.appendChild(
                 dateTd
             );
 
-
             tr.appendChild(
                 descriptionTd
             );
-
 
             tr.appendChild(
                 timeTd
             );
 
-
             tr.appendChild(
                 actionTd
             );
-
 
             tr.appendChild(
                 deleteTd
             );
 
-
             workTableBody.appendChild(
                 tr
             );
 
-
             updateActionColor(
-                actionInput
+                actionSelect
             );
 
         }
     );
 
 }
-
-
-/* ENTER NAVIGATION */
 
 workTableBody.addEventListener(
     "keydown",
@@ -999,30 +856,21 @@ workTableBody.addEventListener(
 
         }
 
-
         event.preventDefault();
-
 
         const current =
             event.target;
 
-
-        if(
-            !current ||
-            current.tagName !==
-                "INPUT"
-        ){
+        if(!current){
 
             return;
 
         }
 
-
         const row =
             current.closest(
                 "tr"
             );
-
 
         if(!row){
 
@@ -1030,28 +878,22 @@ workTableBody.addEventListener(
 
         }
 
-
         const inputs =
             Array.from(
                 row.querySelectorAll(
-                    "input"
+                    "input, select"
                 )
             );
-
 
         const currentIndex =
             inputs.indexOf(
                 current
             );
 
-
         const rowIndex =
             Number(
                 current.dataset.index
             );
-
-
-        /* DATE → DESCRIPTION */
 
         if(
             currentIndex === 0
@@ -1063,9 +905,6 @@ workTableBody.addEventListener(
 
         }
 
-
-        /* DESCRIPTION → TIME */
-
         if(
             currentIndex === 1
         ){
@@ -1076,9 +915,6 @@ workTableBody.addEventListener(
 
         }
 
-
-        /* TIME → ACTION */
-
         if(
             currentIndex === 2
         ){
@@ -1088,13 +924,10 @@ workTableBody.addEventListener(
                     current.value
                 );
 
-
             works[rowIndex].time =
                 current.value;
 
-
             saveData();
-
 
             inputs[3].focus();
 
@@ -1102,35 +935,14 @@ workTableBody.addEventListener(
 
         }
 
-
-        /* ACTION → NEW ROW */
-
         if(
             currentIndex === 3
         ){
 
-            if(
-                current.value
-                    .trim() === ""
-            ){
-
-                current.value =
-                    "Pending";
-
-            }
-
-
             works[rowIndex].action =
                 current.value;
 
-
-            updateActionColor(
-                current
-            );
-
-
             saveData();
-
 
             if(
                 rowIndex ===
@@ -1151,12 +963,9 @@ workTableBody.addEventListener(
 
                 });
 
-
                 saveData();
 
-
                 renderWorks();
-
 
                 const rows =
                     workTableBody
@@ -1164,25 +973,21 @@ workTableBody.addEventListener(
                         "tr"
                     );
 
-
                 const newRow =
                     rows[
                         rows.length - 1
                     ];
-
 
                 if(newRow){
 
                     const newInputs =
                         newRow
                         .querySelectorAll(
-                            "input"
+                            "input, select"
                         );
-
 
                     const descriptionInput =
                         newInputs[1];
-
 
                     if(
                         descriptionInput
@@ -1194,7 +999,6 @@ workTableBody.addEventListener(
 
                 }
 
-
                 return;
 
             }
@@ -1203,9 +1007,6 @@ workTableBody.addEventListener(
 
     }
 );
-
-
-/* BACKUP */
 
 backupBtn.addEventListener(
     "click",
@@ -1225,14 +1026,12 @@ backupBtn.addEventListener(
 
         };
 
-
         const json =
             JSON.stringify(
                 backupData,
                 null,
                 2
             );
-
 
         const blob =
             new Blob(
@@ -1243,26 +1042,21 @@ backupBtn.addEventListener(
                 }
             );
 
-
         const url =
             URL.createObjectURL(
                 blob
             );
-
 
         const link =
             document.createElement(
                 "a"
             );
 
-
         link.href =
             url;
 
-
         const d =
             new Date();
-
 
         const dateName =
             d.getFullYear()
@@ -1275,25 +1069,20 @@ backupBtn.addEventListener(
                 d.getDate()
             ).padStart(2,"0");
 
-
         link.download =
             "Work-Planner-Backup-"
             + dateName
             + ".backup";
 
-
         document.body.appendChild(
             link
         );
 
-
         link.click();
-
 
         document.body.removeChild(
             link
         );
-
 
         setTimeout(
             function(){
@@ -1309,9 +1098,6 @@ backupBtn.addEventListener(
     }
 );
 
-
-/* RESTORE */
-
 restoreBtn.addEventListener(
     "click",
     function(){
@@ -1324,7 +1110,6 @@ restoreBtn.addEventListener(
     }
 );
 
-
 restoreFile.addEventListener(
     "change",
     function(){
@@ -1332,17 +1117,14 @@ restoreFile.addEventListener(
         const file =
             this.files[0];
 
-
         if(!file){
 
             return;
 
         }
 
-
         const reader =
             new FileReader();
-
 
         reader.onload =
             function(event){
@@ -1354,10 +1136,8 @@ restoreFile.addEventListener(
                             event.target.result
                         );
 
-
                     let restoredWorks =
                         null;
-
 
                     if(
                         Array.isArray(
@@ -1381,7 +1161,6 @@ restoreFile.addEventListener(
 
                     }
 
-
                     if(
                         !restoredWorks
                     ){
@@ -1394,7 +1173,6 @@ restoreFile.addEventListener(
 
                     }
 
-
                     if(
                         !confirm(
                             "Restore this backup? Current data will be replaced."
@@ -1405,16 +1183,12 @@ restoreFile.addEventListener(
 
                     }
 
-
                     works =
                         restoredWorks;
 
-
                     saveData();
 
-
                     renderWorks();
-
 
                     alert(
                         "Backup restored successfully."
@@ -1431,16 +1205,12 @@ restoreFile.addEventListener(
 
             };
 
-
         reader.readAsText(
             file
         );
 
     }
 );
-
-
-/* SERVICE WORKER */
 
 if(
     "serviceWorker" in navigator
@@ -1469,9 +1239,6 @@ if(
     );
 
 }
-
-
-/* START */
 
 if(
     works.length === 0
