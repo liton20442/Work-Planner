@@ -128,14 +128,17 @@ td{
     background:#ffffff;
 }
 
+
+/* ONLY DATE + DESCRIPTION WIDTH ADJUSTED */
+
 th:nth-child(1),
 td:nth-child(1){
-    width:18%;
+    width:15%;
 }
 
 th:nth-child(2),
 td:nth-child(2){
-    width:22%;
+    width:25%;
 }
 
 th:nth-child(3),
@@ -1129,11 +1132,6 @@ workTableBody.addEventListener(
             saveData();
 
 
-            /*
-             * Only create a new row
-             * if this is the last row.
-             */
-
             if(
                 rowIndex ===
                 works.length - 1
@@ -1157,19 +1155,8 @@ workTableBody.addEventListener(
                 saveData();
 
 
-                /*
-                 * Render immediately.
-                 * No setTimeout.
-                 */
-
                 renderWorks();
 
-
-                /*
-                 * IMPORTANT:
-                 * Focus immediately during
-                 * the same Enter event.
-                 */
 
                 const rows =
                     workTableBody
