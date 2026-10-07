@@ -108,7 +108,7 @@ thead{
 }
 
 th{
-    padding:8px 7px;
+    padding:8px 4px;
     text-align:left;
     font-size:13px;
     font-weight:700;
@@ -118,7 +118,7 @@ th{
 }
 
 td{
-    padding:4px;
+    padding:2px;
     font-size:17px;
     border-bottom:1px solid #e5e7eb;
     vertical-align:middle;
@@ -156,7 +156,7 @@ td input{
     min-height:40px;
     border:1px solid #cbd5e1;
     border-radius:8px;
-    padding:7px 8px;
+    padding:7px 6px;
     font-size:17px;
     background:white;
 }
@@ -214,18 +214,18 @@ td input:focus{
 
     th{
         font-size:12px;
-        padding:7px 6px;
+        padding:7px 3px;
     }
 
     td{
         font-size:17px;
-        padding:6px;
+        padding:2px;
     }
 
     td input{
         font-size:17px;
         min-height:38px;
-        padding:6px 7px;
+        padding:6px 5px;
     }
 
     .delete-btn{
@@ -806,6 +806,51 @@ function renderWorks(){
 }
 
 
+/* FOCUS NEW DESCRIPTION */
+
+function focusNewDescription(){
+
+    const rows =
+        workTableBody.querySelectorAll("tr");
+
+    const newRow =
+        rows[rows.length - 1];
+
+    if(!newRow){
+        return;
+    }
+
+    const descriptionInput =
+        newRow.querySelector(
+            'input[data-field="description"]'
+        );
+
+    if(!descriptionInput){
+        return;
+    }
+
+    descriptionInput.focus();
+
+    try{
+
+        descriptionInput.click();
+
+    }catch(error){}
+
+    try{
+
+        descriptionInput.select();
+
+        descriptionInput.setSelectionRange(
+            descriptionInput.value.length,
+            descriptionInput.value.length
+        );
+
+    }catch(error){}
+
+}
+
+
 /* ENTER NAVIGATION */
 
 workTableBody.addEventListener(
@@ -950,65 +995,35 @@ workTableBody.addEventListener(
 
 
                 /*
-                 * NEW ROW:
-                 * Select Description and
-                 * open iPhone keyboard.
+                 * নতুন Row তৈরি হওয়ার পর
+                 * Description-এ focus।
                  */
 
                 setTimeout(
                     function(){
 
-                        const rows =
-                            workTableBody
-                            .querySelectorAll(
-                                "tr"
-                            );
-
-                        const newRow =
-                            rows[
-                                rows.length - 1
-                            ];
-
-
-                        if(newRow){
-
-                            const newInputs =
-                                newRow
-                                .querySelectorAll(
-                                    "input"
-                                );
-
-
-                            if(newInputs[1]){
-
-                                newInputs[1].focus();
-
-                                setTimeout(
-                                    function(){
-
-                                        newInputs[1].click();
-
-                                        try{
-
-                                            newInputs[1]
-                                                .setSelectionRange(
-                                                    newInputs[1].value.length,
-                                                    newInputs[1].value.length
-                                                );
-
-                                        }catch(error){}
-
-                                    },
-                                    100
-                                );
-
-                            }
-
-                        }
+                        focusNewDescription();
 
                     },
                     50
                 );
+
+
+                /*
+                 * iPhone Safari-তে
+                 * keyboard চালু রাখার জন্য
+                 * দ্বিতীয়বার focus।
+                 */
+
+                setTimeout(
+                    function(){
+
+                        focusNewDescription();
+
+                    },
+                    150
+                );
+
 
                 return;
 
