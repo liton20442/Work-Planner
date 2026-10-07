@@ -97,12 +97,12 @@ header p{
     overflow:hidden;
 }
 
+/* FIX: real visible gap between columns */
 table{
     width:100%;
-    min-width:0;
     max-width:100%;
     border-collapse:separate;
-    border-spacing:4px 0;
+    border-spacing:0;
     table-layout:fixed;
 }
 
@@ -111,7 +111,7 @@ thead{
 }
 
 th{
-    padding:8px 2px;
+    padding:8px 4px;
     text-align:left;
     font-size:12px;
     font-weight:700;
@@ -124,7 +124,7 @@ th{
 }
 
 td{
-    padding:0 2px;
+    padding:0 4px;
     margin:0;
     font-size:16px;
     border-bottom:1px solid #e5e7eb;
@@ -135,6 +135,18 @@ td{
     max-width:100%;
 }
 
+/* Actual visible separation between columns */
+th:nth-child(2),
+td:nth-child(2){
+    border-left:5px solid #f4f7f8;
+}
+
+th:nth-child(3),
+td:nth-child(3){
+    border-left:5px solid #f4f7f8;
+}
+
+/* Fixed column widths */
 th:nth-child(1),
 td:nth-child(1){
     width:28%;
@@ -153,10 +165,10 @@ td:nth-child(3){
 
 td input{
     display:block;
-    width:calc(100% - 2px);
+    width:100%;
     min-width:0;
     max-width:100%;
-    margin:0 1px;
+    margin:0;
     min-height:38px;
     border:1px solid #cbd5e1;
     border-radius:7px;
@@ -214,32 +226,39 @@ td input:focus{
 
     table{
         width:100%;
-        min-width:0;
         max-width:100%;
         border-collapse:separate;
-        border-spacing:4px 0;
+        border-spacing:0;
         table-layout:fixed;
     }
 
     th{
         font-size:11px;
-        padding:7px 2px;
+        padding:7px 3px;
         min-width:0;
         max-width:100%;
     }
 
     td{
         font-size:16px;
-        padding:0 1px;
+        padding:0 3px;
         min-width:0;
         max-width:100%;
     }
 
+    /* Mobile gap */
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(3),
+    td:nth-child(3){
+        border-left:5px solid #f4f7f8;
+    }
+
     td input{
-        width:calc(100% - 2px);
+        width:100%;
         min-width:0;
         max-width:100%;
-        margin:0 1px;
+        margin:0;
         font-size:16px;
         min-height:38px;
         padding:6px 3px;
@@ -836,8 +855,7 @@ backupBtn.addEventListener(
             + "-"
             + String(
                 d.getMonth()+1
-            ).padStart(2,"0"
-            )
+            ).padStart(2,"0")
             + "-"
             + String(
                 d.getDate()
