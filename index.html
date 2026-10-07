@@ -113,7 +113,7 @@ thead{
 th{
     padding:8px 2px;
     text-align:left;
-    font-size:11px;
+    font-size:12px;
     font-weight:700;
     white-space:nowrap;
     border-bottom:1px solid #b9dfda;
@@ -131,24 +131,19 @@ td{
     overflow:hidden;
 }
 
-/* Four columns - exactly 100% */
+/* Three columns */
 th:nth-child(1),
 td:nth-child(1){
-    width:25%;
+    width:28%;
 }
 
 th:nth-child(2),
 td:nth-child(2){
-    width:35%;
+    width:52%;
 }
 
 th:nth-child(3),
 td:nth-child(3){
-    width:20%;
-}
-
-th:nth-child(4),
-td:nth-child(4){
     width:20%;
     text-align:center;
 }
@@ -162,8 +157,8 @@ td input{
     min-height:38px;
     border:1px solid #cbd5e1;
     border-radius:7px;
-    padding:6px 3px;
-    font-size:15px;
+    padding:6px 4px;
+    font-size:16px;
     background:white;
 }
 
@@ -222,12 +217,12 @@ td input:focus{
     }
 
     th{
-        font-size:10px;
-        padding:7px 1px;
+        font-size:11px;
+        padding:7px 2px;
     }
 
     td{
-        font-size:15px;
+        font-size:16px;
         padding:0 1px;
     }
 
@@ -235,9 +230,9 @@ td input:focus{
         width:100%;
         min-width:0;
         max-width:100%;
-        font-size:15px;
+        font-size:16px;
         min-height:38px;
-        padding:6px 2px;
+        padding:6px 3px;
     }
 
     .delete-btn{
@@ -294,7 +289,6 @@ td input:focus{
                     <tr>
                         <th>Date</th>
                         <th>Work Description</th>
-                        <th>Time</th>
                         <th>Delete</th>
                     </tr>
                 </thead>
@@ -431,35 +425,6 @@ function createId(){
 
 }
 
-function formatTime(value){
-
-    value =
-        String(
-            value || ""
-        ).trim();
-
-    if(value === ""){
-
-        return "";
-
-    }
-
-    if(
-        /^\d+(\.\d+)?$/.test(
-            value
-        )
-    ){
-
-        return Number(
-            value
-        ).toFixed(2);
-
-    }
-
-    return value;
-
-}
-
 function addNewRow(){
 
     works.push({
@@ -468,9 +433,7 @@ function addNewRow(){
 
         date:getToday(),
 
-        description:"",
-
-        time:""
+        description:""
 
     });
 
@@ -589,67 +552,6 @@ function renderWorks(){
                 descriptionInput
             );
 
-            const timeTd =
-                document.createElement(
-                    "td"
-                );
-
-            const timeInput =
-                document.createElement(
-                    "input"
-                );
-
-            timeInput.type =
-                "text";
-
-            timeInput.value =
-                work.time || "";
-
-            timeInput.autocomplete =
-                "off";
-
-            timeInput.placeholder =
-                "Time";
-
-            timeInput.dataset.index =
-                index;
-
-            timeInput.dataset.field =
-                "time";
-
-            timeInput.addEventListener(
-                "input",
-                function(){
-
-                    works[index].time =
-                        this.value;
-
-                    saveData();
-
-                }
-            );
-
-            timeInput.addEventListener(
-                "blur",
-                function(){
-
-                    this.value =
-                        formatTime(
-                            this.value
-                        );
-
-                    works[index].time =
-                        this.value;
-
-                    saveData();
-
-                }
-            );
-
-            timeTd.appendChild(
-                timeInput
-            );
-
             const deleteTd =
                 document.createElement(
                     "td"
@@ -700,10 +602,6 @@ function renderWorks(){
 
             tr.appendChild(
                 descriptionTd
-            );
-
-            tr.appendChild(
-                timeTd
             );
 
             tr.appendChild(
@@ -790,30 +688,6 @@ workTableBody.addEventListener(
             currentIndex === 1
         ){
 
-            if(inputs[2]){
-
-                inputs[2].focus();
-
-            }
-
-            return;
-
-        }
-
-        if(
-            currentIndex === 2
-        ){
-
-            current.value =
-                formatTime(
-                    current.value
-                );
-
-            works[rowIndex].time =
-                current.value;
-
-            saveData();
-
             if(
                 rowIndex ===
                 works.length - 1
@@ -825,9 +699,7 @@ workTableBody.addEventListener(
 
                     date:getToday(),
 
-                    description:"",
-
-                    time:""
+                    description:""
 
                 });
 
@@ -1091,10 +963,6 @@ restoreFile.addEventListener(
 
                                     description:
                                         item.description ||
-                                        "",
-
-                                    time:
-                                        item.time ||
                                         ""
 
                                 };
