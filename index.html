@@ -66,14 +66,12 @@ header p{
 
 .utility-buttons button{
     flex:1;
-    width:100%;
     min-height:44px;
-    border:none;
+    border:0;
     border-radius:8px;
     color:white;
     font-size:16px;
     font-weight:700;
-    cursor:pointer;
     box-shadow:0 3px 8px rgba(0,0,0,.15);
 }
 
@@ -83,10 +81,6 @@ header p{
 
 .restore-btn{
     background:#7c3aed;
-}
-
-.utility-buttons button:active{
-    transform:scale(.97);
 }
 
 .table-card{
@@ -129,14 +123,6 @@ td{
     border-bottom:1px solid #e5e7eb;
     vertical-align:middle;
     background:#ffffff;
-}
-
-tbody tr:last-child td{
-    border-bottom:none;
-}
-
-tbody tr:hover td{
-    background:#f0fdfa;
 }
 
 th:nth-child(1),
@@ -186,9 +172,6 @@ td select:focus{
 .action-select{
     min-width:105px;
     font-weight:600;
-    color:#92400e;
-    background:#fffbeb;
-    border-color:#fcd34d;
 }
 
 .delete-btn{
@@ -197,7 +180,7 @@ td select:focus{
     height:38px;
     min-height:38px;
     padding:0;
-    border:none;
+    border:0;
     border-radius:8px;
     background:#ef4444;
     color:white;
@@ -206,11 +189,6 @@ td select:focus{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    box-shadow:0 2px 6px rgba(220,38,38,.22);
-}
-
-.delete-btn:active{
-    transform:scale(.95);
 }
 
 .empty{
@@ -257,7 +235,6 @@ td select:focus{
         min-width:36px;
         height:36px;
         min-height:36px;
-        font-size:20px;
     }
 }
 </style>
@@ -315,7 +292,9 @@ td select:focus{
 
         </div>
 
-        <div id="emptyMessage" class="empty">
+        <div id="emptyMessage"
+             class="empty"
+             style="display:none;">
             No work added yet.
         </div>
 
@@ -328,6 +307,9 @@ td select:focus{
 const STORAGE_KEY = "workPlannerDataV1";
 
 let works = [];
+
+
+/* LOAD DATA */
 
 try{
 
@@ -351,6 +333,13 @@ try{
 
 }
 
+
+const workTableBody =
+    document.getElementById("workTableBody");
+
+const emptyMessage =
+    document.getElementById("emptyMessage");
+
 const backupBtn =
     document.getElementById("backupBtn");
 
@@ -360,12 +349,30 @@ const restoreBtn =
 const restoreFile =
     document.getElementById("restoreFile");
 
-const workTableBody =
-    document.getElementById("workTableBody");
 
-const emptyMessage =
-    document.getElementById("emptyMessage");
+/* TODAY */
 
+function getToday(){
+
+    const d = new Date();
+
+    const y =
+        d.getFullYear();
+
+    const m =
+        String(d.getMonth()+1)
+        .padStart(2,"0");
+
+    const day =
+        String(d.getDate())
+        .padStart(2,"0");
+
+    return y + "-" + m + "-" + day;
+
+}
+
+
+/* SAVE */
 
 function saveData(){
 
@@ -377,32 +384,14 @@ function saveData(){
 }
 
 
+/* ID */
+
 function createId(){
 
     return Date.now().toString()
         + Math.random()
         .toString(36)
-        .slice(2);
-
-}
-
-
-function todayString(){
-
-    const today = new Date();
-
-    const year =
-        today.getFullYear();
-
-    const month =
-        String(today.getMonth() + 1)
-        .padStart(2,"0");
-
-    const day =
-        String(today.getDate())
-        .padStart(2,"0");
-
-    return `${year}-${month}-${day}`;
+        .substring(2);
 
 }
 
@@ -411,18 +400,24 @@ function todayString(){
 
 function formatTime(value){
 
-    value = String(value || "").trim();
+    value =
+        String(value || "").trim();
 
     if(value === ""){
         return "";
     }
 
-    const number =
-        Number(value);
+    /*
+       Only numeric values are converted.
+       5     -> 5.00
+       5.5   -> 5.50
+       10    -> 10.00
+       10.25 -> 10.25
+    */
 
-    if(!isNaN(number)){
+    if(/^\d+(\.\d+)?$/.test(value)){
 
-        return number.toFixed(2);
+        return Number(value).toFixed(2);
 
     }
 
@@ -431,15 +426,15 @@ function formatTime(value){
 }
 
 
-/* CREATE EMPTY ROW */
+/* ADD NEW ROW */
 
-function createNewRow(){
+function addNewRow(){
 
-    const newWork = {
+    works.push({
 
         id:createId(),
 
-        date:todayString(),
+        date:getToday(),
 
         description:"",
 
@@ -447,15 +442,11 @@ function createNewRow(){
 
         action:"Pending"
 
-    };
-
-    works.push(newWork);
+    });
 
     saveData();
 
     renderWorks();
-
-    focusFirstEmptyRow();
 
 }
 
@@ -471,15 +462,17 @@ function renderWorks(){
         emptyMessage.style.display =
             "block";
 
-    }else{
+        addNewRow();
 
-        emptyMessage.style.display =
-            "none";
+        return;
 
     }
 
+    emptyMessage.style.display =
+        "none";
 
-    works.forEach((work,index)=>{
+
+    works.forEach(function(work,index){
 
         const tr =
             document.createElement("tr");
@@ -507,6 +500,7 @@ function renderWorks(){
         dateInput.dataset.field =
             "date";
 
+
         dateInput.addEventListener(
             "input",
             function(){
@@ -518,6 +512,7 @@ function renderWorks(){
 
             }
         );
+
 
         dateTd.appendChild(
             dateInput
@@ -550,6 +545,7 @@ function renderWorks(){
         descriptionInput.dataset.field =
             "description";
 
+
         descriptionInput.addEventListener(
             "input",
             function(){
@@ -561,6 +557,7 @@ function renderWorks(){
 
             }
         );
+
 
         descriptionTd.appendChild(
             descriptionInput
@@ -646,47 +643,23 @@ function renderWorks(){
             "action";
 
 
-        const pendingOption =
-            document.createElement("option");
+        ["Pending","Completed","Partial"]
+        .forEach(function(value){
 
-        pendingOption.value =
-            "Pending";
+            const option =
+                document.createElement("option");
 
-        pendingOption.textContent =
-            "Pending";
+            option.value =
+                value;
 
+            option.textContent =
+                value;
 
-        const completedOption =
-            document.createElement("option");
+            actionSelect.appendChild(
+                option
+            );
 
-        completedOption.value =
-            "Completed";
-
-        completedOption.textContent =
-            "Completed";
-
-
-        const partialOption =
-            document.createElement("option");
-
-        partialOption.value =
-            "Partial";
-
-        partialOption.textContent =
-            "Partial";
-
-
-        actionSelect.appendChild(
-            pendingOption
-        );
-
-        actionSelect.appendChild(
-            completedOption
-        );
-
-        actionSelect.appendChild(
-            partialOption
-        );
+        });
 
 
         actionSelect.value =
@@ -772,7 +745,7 @@ function renderWorks(){
 }
 
 
-/* ACTION COLOR */
+/* ACTION COLORS */
 
 function updateActionColor(select){
 
@@ -788,7 +761,6 @@ function updateActionColor(select){
             "#047857";
 
     }
-
     else if(select.value === "Partial"){
 
         select.style.background =
@@ -801,7 +773,6 @@ function updateActionColor(select){
             "#c2410c";
 
     }
-
     else{
 
         select.style.background =
@@ -820,150 +791,129 @@ function updateActionColor(select){
 
 /* ENTER NAVIGATION */
 
-function handleEnter(event){
+workTableBody.addEventListener(
+    "keydown",
+    function(event){
 
-    if(event.key !== "Enter"){
-        return;
-    }
+        if(event.key !== "Enter"){
+            return;
+        }
 
-    event.preventDefault();
+        event.preventDefault();
 
-    const element =
-        event.target;
+        const current =
+            event.target;
 
-    const index =
-        Number(element.dataset.index);
+        const row =
+            current.closest("tr");
 
-    const field =
-        element.dataset.field;
+        if(!row){
+            return;
+        }
 
-
-    /* TIME FORMAT */
-
-    if(field === "time"){
-
-        element.value =
-            formatTime(element.value);
-
-        works[index].time =
-            element.value;
-
-        saveData();
-
-    }
-
-
-    /* FIND CURRENT ROW */
-
-    const row =
-        element.closest("tr");
-
-    if(!row){
-        return;
-    }
-
-
-    const cells =
-        Array.from(
-            row.querySelectorAll(
-                "input,select"
-            )
-        );
-
-
-    const currentPosition =
-        cells.indexOf(element);
-
-
-    /* NEXT CELL IN SAME ROW */
-
-    if(currentPosition <
-       cells.length - 1){
-
-        cells[currentPosition + 1]
-            .focus();
-
-        return;
-
-    }
-
-
-    /* LAST CELL OF ROW */
-
-    if(index === works.length - 1){
-
-        createNewRow();
-
-        return;
-
-    }
-
-
-    /* NEXT ROW FIRST CELL */
-
-    const nextRow =
-        workTableBody
-        .querySelectorAll("tr")[index + 1];
-
-    if(nextRow){
-
-        const nextInput =
-            nextRow.querySelector(
-                "input,select"
+        const inputs =
+            Array.from(
+                row.querySelectorAll(
+                    "input, select"
+                )
             );
 
-        if(nextInput){
-            nextInput.focus();
+        const currentIndex =
+            inputs.indexOf(current);
+
+
+        /* TIME */
+
+        if(current.dataset.field === "time"){
+
+            const rowIndex =
+                Number(current.dataset.index);
+
+            current.value =
+                formatTime(current.value);
+
+            works[rowIndex].time =
+                current.value;
+
+            saveData();
+
+        }
+
+
+        /* NEXT CELL */
+
+        if(currentIndex <
+           inputs.length - 1){
+
+            inputs[currentIndex + 1]
+                .focus();
+
+            return;
+
+        }
+
+
+        /* ACTION -> NEW ROW */
+
+        const rowIndex =
+            Number(current.dataset.index);
+
+
+        if(rowIndex === works.length - 1){
+
+            addNewRow();
+
+            setTimeout(function(){
+
+                const rows =
+                    workTableBody
+                    .querySelectorAll("tr");
+
+                const newRow =
+                    rows[rows.length - 1];
+
+                if(newRow){
+
+                    const first =
+                        newRow.querySelector(
+                            "input"
+                        );
+
+                    if(first){
+                        first.focus();
+                    }
+
+                }
+
+            },0);
+
+            return;
+
+        }
+
+
+        /* NEXT EXISTING ROW */
+
+        const nextRow =
+            workTableBody
+            .querySelectorAll("tr")
+            [rowIndex + 1];
+
+        if(nextRow){
+
+            const first =
+                nextRow.querySelector(
+                    "input"
+                );
+
+            if(first){
+                first.focus();
+            }
+
         }
 
     }
-
-}
-
-
-/* EVENT DELEGATION */
-
-workTableBody.addEventListener(
-    "keydown",
-    handleEnter
 );
-
-
-/* FIRST EMPTY ROW */
-
-function focusFirstEmptyRow(){
-
-    const rows =
-        workTableBody.querySelectorAll("tr");
-
-    if(!rows.length){
-        return;
-    }
-
-    const lastRow =
-        rows[rows.length - 1];
-
-    const firstInput =
-        lastRow.querySelector("input");
-
-    if(firstInput){
-        firstInput.focus();
-    }
-
-}
-
-
-/* START WITH ONE ENTRY ROW */
-
-if(works.length === 0){
-
-    createNewRow();
-
-}else{
-
-    renderWorks();
-
-}
 
 
 /* BACKUP */
@@ -1011,24 +961,19 @@ backupBtn.addEventListener(
         const link =
             document.createElement("a");
 
-
         link.href = url;
 
 
-        const today =
-            new Date();
-
+        const d = new Date();
 
         const dateName =
-            today.getFullYear()
+            d.getFullYear()
             + "-"
-            + String(
-                today.getMonth()+1
-              ).padStart(2,"0")
+            + String(d.getMonth()+1)
+              .padStart(2,"0")
             + "-"
-            + String(
-                today.getDate()
-              ).padStart(2,"0");
+            + String(d.getDate())
+              .padStart(2,"0");
 
 
         link.download =
@@ -1037,31 +982,18 @@ backupBtn.addEventListener(
             + ".backup";
 
 
-        link.style.display =
-            "none";
-
-
-        document.body.appendChild(
-            link
-        );
-
+        document.body.appendChild(link);
 
         link.click();
 
-
-        document.body.removeChild(
-            link
-        );
+        document.body.removeChild(link);
 
 
-        setTimeout(
-            function(){
+        setTimeout(function(){
 
-                URL.revokeObjectURL(url);
+            URL.revokeObjectURL(url);
 
-            },
-            1000
-        );
+        },1000);
 
     }
 );
@@ -1087,7 +1019,6 @@ restoreFile.addEventListener(
 
         const file =
             this.files[0];
-
 
         if(!file){
             return;
@@ -1119,7 +1050,6 @@ restoreFile.addEventListener(
                             data;
 
                     }
-
                     else if(
                         data &&
                         Array.isArray(data.works)
@@ -1142,13 +1072,9 @@ restoreFile.addEventListener(
                     }
 
 
-                    const confirmed =
-                        confirm(
-                            "Restore this backup? Current data will be replaced."
-                        );
-
-
-                    if(!confirmed){
+                    if(!confirm(
+                        "Restore this backup? Current data will be replaced."
+                    )){
 
                         return;
 
@@ -1157,7 +1083,6 @@ restoreFile.addEventListener(
 
                     works =
                         restoredWorks;
-
 
                     saveData();
 
@@ -1168,7 +1093,6 @@ restoreFile.addEventListener(
                     );
 
                 }
-
                 catch(error){
 
                     alert(
@@ -1196,19 +1120,31 @@ if("serviceWorker" in navigator){
 
             navigator.serviceWorker
                 .register("sw.js")
-                .catch(
-                    function(error){
+                .catch(function(error){
 
-                        console.log(
-                            "Service Worker registration failed:",
-                            error
-                        );
+                    console.log(
+                        "Service Worker registration failed:",
+                        error
+                    );
 
-                    }
-                );
+                });
 
         }
     );
+
+}
+
+
+/* START */
+
+if(works.length === 0){
+
+    addNewRow();
+
+}
+else{
+
+    renderWorks();
 
 }
 
