@@ -151,8 +151,7 @@ td:nth-child(5){
     text-align:center;
 }
 
-td input,
-td select{
+td input{
     width:100%;
     min-height:40px;
     border:1px solid #cbd5e1;
@@ -162,16 +161,16 @@ td select{
     background:white;
 }
 
-td input:focus,
-td select:focus{
+td input:focus{
     outline:none;
     border-color:#0d9488;
     box-shadow:0 0 0 3px rgba(13,148,136,.13);
 }
 
-.action-select{
+.action-input{
     min-width:105px;
     font-weight:600;
+    background:#fffbeb;
 }
 
 .delete-btn{
@@ -223,8 +222,7 @@ td select:focus{
         padding:6px;
     }
 
-    td input,
-    td select{
+    td input{
         font-size:17px;
         min-height:38px;
         padding:6px 7px;
@@ -376,10 +374,18 @@ function getToday(){
 
 function saveData(){
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(works)
-    );
+    try{
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(works)
+        );
+
+    }catch(error){
+
+        console.log(error);
+
+    }
 
 }
 
@@ -406,14 +412,6 @@ function formatTime(value){
     if(value === ""){
         return "";
     }
-
-    /*
-       Only numeric values are converted.
-       5     -> 5.00
-       5.5   -> 5.50
-       10    -> 10.00
-       10.25 -> 10.25
-    */
 
     if(/^\d+(\.\d+)?$/.test(value)){
 
@@ -451,6 +449,56 @@ function addNewRow(){
 }
 
 
+/* ACTION COLOR */
+
+function updateActionColor(input){
+
+    const value =
+        input.value
+        .trim()
+        .toLowerCase();
+
+
+    if(value === "completed"){
+
+        input.style.background =
+            "#ecfdf5";
+
+        input.style.borderColor =
+            "#6ee7b7";
+
+        input.style.color =
+            "#047857";
+
+    }
+    else if(value === "partial"){
+
+        input.style.background =
+            "#fff7ed";
+
+        input.style.borderColor =
+            "#fdba74";
+
+        input.style.color =
+            "#c2410c";
+
+    }
+    else{
+
+        input.style.background =
+            "#fffbeb";
+
+        input.style.borderColor =
+            "#fcd34d";
+
+        input.style.color =
+            "#92400e";
+
+    }
+
+}
+
+
 /* RENDER */
 
 function renderWorks(){
@@ -461,8 +509,6 @@ function renderWorks(){
 
         emptyMessage.style.display =
             "block";
-
-        addNewRow();
 
         return;
 
@@ -519,7 +565,7 @@ function renderWorks(){
         );
 
 
-        /* DESCRIPTION */
+        /* WORK DESCRIPTION */
 
         const descriptionTd =
             document.createElement("td");
@@ -545,6 +591,12 @@ function renderWorks(){
         descriptionInput.dataset.field =
             "description";
 
+
+        /*
+         * IMPORTANT:
+         * Save directly without renderWorks().
+         * Therefore cursor will not disappear.
+         */
 
         descriptionInput.addEventListener(
             "input",
@@ -609,7 +661,9 @@ function renderWorks(){
             function(){
 
                 this.value =
-                    formatTime(this.value);
+                    formatTime(
+                        this.value
+                    );
 
                 works[index].time =
                     this.value;
@@ -630,44 +684,33 @@ function renderWorks(){
         const actionTd =
             document.createElement("td");
 
-        const actionSelect =
-            document.createElement("select");
+        const actionInput =
+            document.createElement("input");
 
-        actionSelect.className =
-            "action-select";
+        actionInput.type =
+            "text";
 
-        actionSelect.dataset.index =
+        actionInput.value =
+            work.action || "Pending";
+
+        actionInput.autocomplete =
+            "off";
+
+        actionInput.placeholder =
+            "Pending";
+
+        actionInput.className =
+            "action-input";
+
+        actionInput.dataset.index =
             index;
 
-        actionSelect.dataset.field =
+        actionInput.dataset.field =
             "action";
 
 
-        ["Pending","Completed","Partial"]
-        .forEach(function(value){
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                value;
-
-            option.textContent =
-                value;
-
-            actionSelect.appendChild(
-                option
-            );
-
-        });
-
-
-        actionSelect.value =
-            work.action || "Pending";
-
-
-        actionSelect.addEventListener(
-            "change",
+        actionInput.addEventListener(
+            "input",
             function(){
 
                 works[index].action =
@@ -681,8 +724,32 @@ function renderWorks(){
         );
 
 
+        actionInput.addEventListener(
+            "blur",
+            function(){
+
+                if(
+                    this.value.trim() === ""
+                ){
+
+                    this.value =
+                        "Pending";
+
+                }
+
+                works[index].action =
+                    this.value;
+
+                updateActionColor(this);
+
+                saveData();
+
+            }
+        );
+
+
         actionTd.appendChild(
-            actionSelect
+            actionInput
         );
 
 
@@ -737,54 +804,10 @@ function renderWorks(){
         workTableBody.appendChild(tr);
 
         updateActionColor(
-            actionSelect
+            actionInput
         );
 
     });
-
-}
-
-
-/* ACTION COLORS */
-
-function updateActionColor(select){
-
-    if(select.value === "Completed"){
-
-        select.style.background =
-            "#ecfdf5";
-
-        select.style.borderColor =
-            "#6ee7b7";
-
-        select.style.color =
-            "#047857";
-
-    }
-    else if(select.value === "Partial"){
-
-        select.style.background =
-            "#fff7ed";
-
-        select.style.borderColor =
-            "#fdba74";
-
-        select.style.color =
-            "#c2410c";
-
-    }
-    else{
-
-        select.style.background =
-            "#fffbeb";
-
-        select.style.borderColor =
-            "#fcd34d";
-
-        select.style.color =
-            "#92400e";
-
-    }
 
 }
 
@@ -804,6 +827,16 @@ workTableBody.addEventListener(
         const current =
             event.target;
 
+        if(
+            !current ||
+            current.tagName !== "INPUT"
+        ){
+
+            return;
+
+        }
+
+
         const row =
             current.closest("tr");
 
@@ -811,103 +844,166 @@ workTableBody.addEventListener(
             return;
         }
 
+
         const inputs =
             Array.from(
                 row.querySelectorAll(
-                    "input, select"
+                    "input"
                 )
             );
+
 
         const currentIndex =
             inputs.indexOf(current);
 
 
-        /* TIME */
+        const rowIndex =
+            Number(
+                current.dataset.index
+            );
 
-        if(current.dataset.field === "time"){
 
-            const rowIndex =
-                Number(current.dataset.index);
+        /*
+         * DATE → DESCRIPTION
+         */
+
+        if(currentIndex === 0){
+
+            inputs[1].focus();
+
+            return;
+
+        }
+
+
+        /*
+         * DESCRIPTION → TIME
+         */
+
+        if(currentIndex === 1){
+
+            inputs[2].focus();
+
+            return;
+
+        }
+
+
+        /*
+         * TIME → ACTION
+         */
+
+        if(currentIndex === 2){
 
             current.value =
-                formatTime(current.value);
+                formatTime(
+                    current.value
+                );
 
             works[rowIndex].time =
                 current.value;
 
             saveData();
 
-        }
-
-
-        /* NEXT CELL */
-
-        if(currentIndex <
-           inputs.length - 1){
-
-            inputs[currentIndex + 1]
-                .focus();
+            inputs[3].focus();
 
             return;
 
         }
 
 
-        /* ACTION -> NEW ROW */
+        /*
+         * ACTION → NEW ROW
+         */
 
-        const rowIndex =
-            Number(current.dataset.index);
+        if(currentIndex === 3){
 
+            if(
+                current.value.trim() === ""
+            ){
 
-        if(rowIndex === works.length - 1){
+                current.value =
+                    "Pending";
 
-            addNewRow();
-
-            setTimeout(function(){
-
-                const rows =
-                    workTableBody
-                    .querySelectorAll("tr");
-
-                const newRow =
-                    rows[rows.length - 1];
-
-                if(newRow){
-
-                    const first =
-                        newRow.querySelector(
-                            "input"
-                        );
-
-                    if(first){
-                        first.focus();
-                    }
-
-                }
-
-            },0);
-
-            return;
-
-        }
+            }
 
 
-        /* NEXT EXISTING ROW */
+            works[rowIndex].action =
+                current.value;
 
-        const nextRow =
-            workTableBody
-            .querySelectorAll("tr")
-            [rowIndex + 1];
+            updateActionColor(
+                current
+            );
 
-        if(nextRow){
+            saveData();
 
-            const first =
-                nextRow.querySelector(
-                    "input"
+
+            /*
+             * Only create a new row
+             * when this is the last row.
+             */
+
+            if(
+                rowIndex ===
+                works.length - 1
+            ){
+
+                works.push({
+
+                    id:createId(),
+
+                    date:getToday(),
+
+                    description:"",
+
+                    time:"",
+
+                    action:"Pending"
+
+                });
+
+
+                saveData();
+
+                renderWorks();
+
+
+                setTimeout(
+                    function(){
+
+                        const rows =
+                            workTableBody
+                            .querySelectorAll(
+                                "tr"
+                            );
+
+
+                        const newRow =
+                            rows[
+                                rows.length - 1
+                            ];
+
+
+                        if(newRow){
+
+                            const firstInput =
+                                newRow.querySelector(
+                                    "input"
+                                );
+
+
+                            if(firstInput){
+
+                                firstInput.focus();
+
+                            }
+
+                        }
+
+                    },
+                    50
                 );
 
-            if(first){
-                first.focus();
             }
 
         }
@@ -955,7 +1051,9 @@ backupBtn.addEventListener(
 
 
         const url =
-            URL.createObjectURL(blob);
+            URL.createObjectURL(
+                blob
+            );
 
 
         const link =
