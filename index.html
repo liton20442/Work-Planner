@@ -154,8 +154,7 @@ td:nth-child(5){
     text-align:center;
 }
 
-td input,
-td select{
+td input{
     width:calc(100% - 2px);
     margin:0 1px;
     min-height:40px;
@@ -166,22 +165,89 @@ td select{
     background:white;
 }
 
-td select{
-    appearance:auto;
-    -webkit-appearance:auto;
-}
-
-td input:focus,
-td select:focus{
+td input:focus{
     outline:none;
     border-color:#0d9488;
     box-shadow:0 0 0 3px rgba(13,148,136,.13);
 }
 
-.action-select{
-    min-width:105px;
+/* CUSTOM ACTION DROPDOWN */
+
+.action-box{
+    position:relative;
+    width:calc(100% - 2px);
+    margin:0 1px;
+}
+
+.action-display{
+    width:100%;
+    min-height:40px;
+    border:1px solid #fcd34d;
+    border-radius:8px;
+    padding:7px 28px 7px 7px;
+    font-size:17px;
     font-weight:600;
     background:#fffbeb;
+    color:#92400e;
+    position:relative;
+    cursor:pointer;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+.action-display::after{
+    content:"▾";
+    position:absolute;
+    right:7px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:15px;
+}
+
+.action-menu{
+    display:none;
+    position:absolute;
+    left:0;
+    right:0;
+    top:calc(100% + 2px);
+    z-index:100;
+    background:white;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    box-shadow:0 5px 15px rgba(0,0,0,.18);
+    overflow:hidden;
+}
+
+.action-menu.open{
+    display:block;
+}
+
+.action-option{
+    padding:10px 8px;
+    min-height:40px;
+    font-size:16px;
+    font-weight:600;
+    background:white;
+    cursor:pointer;
+}
+
+.action-option:hover{
+    background:#f1f5f9;
+}
+
+.action-option.pending{
+    color:#92400e;
+    background:#fffbeb;
+}
+
+.action-option.partial{
+    color:#c2410c;
+    background:#fff7ed;
+}
+
+.action-option.completed{
+    color:#047857;
+    background:#ecfdf5;
 }
 
 .delete-btn{
@@ -233,11 +299,22 @@ td select:focus{
         padding:0;
     }
 
-    td input,
-    td select{
+    td input{
         font-size:17px;
         min-height:38px;
         padding:6px 5px;
+    }
+
+    .action-display{
+        min-height:38px;
+        font-size:17px;
+        padding:6px 27px 6px 6px;
+    }
+
+    .action-option{
+        min-height:38px;
+        font-size:16px;
+        padding:9px 7px;
     }
 
     .delete-btn{
@@ -480,51 +557,321 @@ function addNewRow(){
 
 }
 
-function updateActionColor(select){
+function getActionClass(value){
 
-    const value =
-        select.value
-        .trim()
-        .toLowerCase();
+    value =
+        String(
+            value || "Pending"
+        ).toLowerCase();
 
     if(value === "completed"){
 
-        select.style.background =
-            "#ecfdf5";
-
-        select.style.borderColor =
-            "#6ee7b7";
-
-        select.style.color =
-            "#047857";
+        return "completed";
 
     }
-    else if(value === "partial"){
 
-        select.style.background =
-            "#fff7ed";
+    if(value === "partial"){
 
-        select.style.borderColor =
-            "#fdba74";
-
-        select.style.color =
-            "#c2410c";
+        return "partial";
 
     }
-    else{
 
-        select.style.background =
-            "#fffbeb";
-
-        select.style.borderColor =
-            "#fcd34d";
-
-        select.style.color =
-            "#92400e";
-
-    }
+    return "pending";
 
 }
+
+function closeAllActionMenus(){
+
+    document
+        .querySelectorAll(
+            ".action-menu.open"
+        )
+        .forEach(
+            function(menu){
+
+                menu.classList.remove(
+                    "open"
+                );
+
+            }
+        );
+
+}
+
+function createActionDropdown(
+    work,
+    index
+){
+
+    const actionBox =
+        document.createElement(
+            "div"
+        );
+
+    actionBox.className =
+        "action-box";
+
+    const display =
+        document.createElement(
+            "div"
+        );
+
+    display.className =
+        "action-display";
+
+    display.tabIndex = 0;
+
+    const menu =
+        document.createElement(
+            "div"
+        );
+
+    menu.className =
+        "action-menu";
+
+    const actions = [
+        "Pending",
+        "Partial",
+        "Completed"
+    ];
+
+    function setDisplay(){
+
+        const value =
+            work.action ||
+            "Pending";
+
+        display.textContent =
+            value;
+
+        display.className =
+            "action-display "
+            + getActionClass(
+                value
+            );
+
+        menu.classList.remove(
+            "open"
+        );
+
+    }
+
+    actions.forEach(
+        function(action){
+
+            const option =
+                document.createElement(
+                    "div"
+                );
+
+            option.className =
+                "action-option "
+                + getActionClass(
+                    action
+                );
+
+            option.textContent =
+                action;
+
+            option.dataset.value =
+                action;
+
+            option.addEventListener(
+                "click",
+                function(event){
+
+                    event.stopPropagation();
+
+                    works[index].action =
+                        action;
+
+                    saveData();
+
+                    setDisplay();
+
+                }
+            );
+
+            menu.appendChild(
+                option
+            );
+
+        }
+    );
+
+    display.addEventListener(
+        "click",
+        function(event){
+
+            event.stopPropagation();
+
+            const wasOpen =
+                menu.classList.contains(
+                    "open"
+                );
+
+            closeAllActionMenus();
+
+            if(!wasOpen){
+
+                menu.classList.add(
+                    "open"
+                );
+
+            }
+
+        }
+    );
+
+    display.addEventListener(
+        "keydown",
+        function(event){
+
+            if(
+                event.key ===
+                "Enter"
+            ){
+
+                event.preventDefault();
+
+                closeAllActionMenus();
+
+                const row =
+                    display.closest(
+                        "tr"
+                    );
+
+                if(!row){
+
+                    return;
+
+                }
+
+                const rowIndex =
+                    Number(
+                        display.dataset.index
+                    );
+
+                if(
+                    rowIndex ===
+                    works.length - 1
+                ){
+
+                    works[rowIndex].action =
+                        works[rowIndex].action ||
+                        "Pending";
+
+                    works.push({
+
+                        id:createId(),
+
+                        date:getToday(),
+
+                        description:"",
+
+                        time:"",
+
+                        action:"Pending"
+
+                    });
+
+                    saveData();
+
+                    renderWorks();
+
+                    const rows =
+                        workTableBody
+                        .querySelectorAll(
+                            "tr"
+                        );
+
+                    const newRow =
+                        rows[
+                            rows.length - 1
+                        ];
+
+                    if(newRow){
+
+                        const newInputs =
+                            newRow
+                            .querySelectorAll(
+                                "input"
+                            );
+
+                        if(
+                            newInputs[1]
+                        ){
+
+                            newInputs[1].focus();
+
+                        }
+
+                    }
+
+                }
+                else{
+
+                    const rows =
+                        workTableBody
+                        .querySelectorAll(
+                            "tr"
+                        );
+
+                    const nextRow =
+                        rows[
+                            rowIndex + 1
+                        ];
+
+                    if(nextRow){
+
+                        const nextInputs =
+                            nextRow
+                            .querySelectorAll(
+                                "input"
+                            );
+
+                        if(
+                            nextInputs[0]
+                        ){
+
+                            nextInputs[0].focus();
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+    display.dataset.index =
+        index;
+
+    actionBox.appendChild(
+        display
+    );
+
+    actionBox.appendChild(
+        menu
+    );
+
+    setDisplay();
+
+    return actionBox;
+
+}
+
+document.addEventListener(
+    "click",
+    function(){
+
+        closeAllActionMenus();
+
+    }
+);
 
 function renderWorks(){
 
@@ -701,72 +1048,14 @@ function renderWorks(){
                     "td"
                 );
 
-            const actionSelect =
-                document.createElement(
-                    "select"
+            const actionDropdown =
+                createActionDropdown(
+                    work,
+                    index
                 );
 
-            actionSelect.className =
-                "action-select";
-
-            actionSelect.dataset.index =
-                index;
-
-            actionSelect.dataset.field =
-                "action";
-
-            const actions = [
-                "Pending",
-                "Partial",
-                "Completed"
-            ];
-
-            actions.forEach(
-                function(action){
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-                    option.value =
-                        action;
-
-                    option.textContent =
-                        action;
-
-                    actionSelect.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-            actionSelect.value =
-                actions.includes(
-                    work.action
-                )
-                ? work.action
-                : "Pending";
-
-            actionSelect.addEventListener(
-                "change",
-                function(){
-
-                    works[index].action =
-                        this.value;
-
-                    updateActionColor(
-                        this
-                    );
-
-                    saveData();
-
-                }
-            );
-
             actionTd.appendChild(
-                actionSelect
+                actionDropdown
             );
 
             const deleteTd =
@@ -837,10 +1126,6 @@ function renderWorks(){
                 tr
             );
 
-            updateActionColor(
-                actionSelect
-            );
-
         }
     );
 
@@ -856,16 +1141,20 @@ workTableBody.addEventListener(
 
         }
 
-        event.preventDefault();
-
         const current =
             event.target;
 
-        if(!current){
+        if(
+            !current ||
+            current.tagName !==
+                "INPUT"
+        ){
 
             return;
 
         }
+
+        event.preventDefault();
 
         const row =
             current.closest(
@@ -881,7 +1170,7 @@ workTableBody.addEventListener(
         const inputs =
             Array.from(
                 row.querySelectorAll(
-                    "input, select"
+                    "input"
                 )
             );
 
@@ -899,7 +1188,11 @@ workTableBody.addEventListener(
             currentIndex === 0
         ){
 
-            inputs[1].focus();
+            if(inputs[1]){
+
+                inputs[1].focus();
+
+            }
 
             return;
 
@@ -909,7 +1202,11 @@ workTableBody.addEventListener(
             currentIndex === 1
         ){
 
-            inputs[2].focus();
+            if(inputs[2]){
+
+                inputs[2].focus();
+
+            }
 
             return;
 
@@ -929,79 +1226,18 @@ workTableBody.addEventListener(
 
             saveData();
 
-            inputs[3].focus();
+            const actionDisplay =
+                row.querySelector(
+                    ".action-display"
+                );
 
-            return;
+            if(actionDisplay){
 
-        }
-
-        if(
-            currentIndex === 3
-        ){
-
-            works[rowIndex].action =
-                current.value;
-
-            saveData();
-
-            if(
-                rowIndex ===
-                works.length - 1
-            ){
-
-                works.push({
-
-                    id:createId(),
-
-                    date:getToday(),
-
-                    description:"",
-
-                    time:"",
-
-                    action:"Pending"
-
-                });
-
-                saveData();
-
-                renderWorks();
-
-                const rows =
-                    workTableBody
-                    .querySelectorAll(
-                        "tr"
-                    );
-
-                const newRow =
-                    rows[
-                        rows.length - 1
-                    ];
-
-                if(newRow){
-
-                    const newInputs =
-                        newRow
-                        .querySelectorAll(
-                            "input, select"
-                        );
-
-                    const descriptionInput =
-                        newInputs[1];
-
-                    if(
-                        descriptionInput
-                    ){
-
-                        descriptionInput.focus();
-
-                    }
-
-                }
-
-                return;
+                actionDisplay.focus();
 
             }
+
+            return;
 
         }
 
