@@ -2,23 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0,
-      viewport-fit=cover">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0f766e">
-
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Work Planner">
-
 <link rel="manifest" href="manifest.json">
-
 <title>Work Planner</title>
-
 <style>
-
 *{
     box-sizing:border-box;
 }
@@ -97,7 +88,6 @@ header p{
     overflow:hidden;
 }
 
-/* FIX: real visible gap between columns */
 table{
     width:100%;
     max-width:100%;
@@ -135,7 +125,6 @@ td{
     max-width:100%;
 }
 
-/* Actual visible separation between columns */
 th:nth-child(2),
 td:nth-child(2){
     border-left:10px solid #f4f7f8;
@@ -146,7 +135,6 @@ td:nth-child(3){
     border-left:4px solid #f4f7f8;
 }
 
-/* Fixed column widths */
 th:nth-child(1),
 td:nth-child(1){
     width:30%;
@@ -247,7 +235,6 @@ td input:focus{
         max-width:100%;
     }
 
-    /* Mobile gap */
     th:nth-child(2),
     td:nth-child(2),
     th:nth-child(3),
@@ -273,800 +260,390 @@ td input:focus{
         min-height:30px;
         font-size:18px;
     }
-
 }
-
 </style>
 </head>
-
 <body>
-
 <header>
     <h1>Work Planner</h1>
     <p>Daily Work Management</p>
 </header>
-
 <div class="container">
+<div class="utility-buttons">
+    <button type="button" id="backupBtn" class="backup-btn">
+        Backup Data
+    </button>
 
-    <div class="utility-buttons">
-
-        <button type="button"
-                id="backupBtn"
-                class="backup-btn">
-            Backup Data
-        </button>
-
-        <button type="button"
-                id="restoreBtn"
-                class="restore-btn">
-            Restore Data
-        </button>
-
-    </div>
-
-    <input type="file"
-           id="restoreFile"
-           accept=".json,application/json,.backup"
-           style="display:none;">
-
-    <div class="table-card">
-
-        <div class="table-wrap">
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Work Description</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
-
-                <tbody id="workTableBody"></tbody>
-
-            </table>
-
-        </div>
-
-        <div id="emptyMessage"
-             class="empty"
-             style="display:none;">
-            No work added yet.
-        </div>
-
-    </div>
-
+    <button type="button" id="restoreBtn" class="restore-btn">
+        Restore Data
+    </button>
 </div>
 
-<script>
+<input type="file"
+       id="restoreFile"
+       accept=".json,application/json,.backup"
+       style="display:none;">
 
-const STORAGE_KEY =
-    "workPlannerDataV1";
+<div class="table-card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Work Description</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+
+            <tbody id="workTableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="emptyMessage" class="empty" style="display:none;">
+        No work added yet.
+    </div>
+</div>
+</div>
+<script>
+const STORAGE_KEY = "workPlannerDataV1";
 
 let works = [];
 
 try{
-
-    const saved =
-        localStorage.getItem(
-            STORAGE_KEY
-        );
+    const saved = localStorage.getItem(STORAGE_KEY);
 
     if(saved){
-
-        const parsed =
-            JSON.parse(saved);
+        const parsed = JSON.parse(saved);
 
         if(Array.isArray(parsed)){
-
             works = parsed;
-
         }
-
     }
-
 }
 catch(error){
-
     works = [];
-
 }
 
-const workTableBody =
-    document.getElementById(
-        "workTableBody"
-    );
-
-const emptyMessage =
-    document.getElementById(
-        "emptyMessage"
-    );
-
-const backupBtn =
-    document.getElementById(
-        "backupBtn"
-    );
-
-const restoreBtn =
-    document.getElementById(
-        "restoreBtn"
-    );
-
-const restoreFile =
-    document.getElementById(
-        "restoreFile"
-    );
+const workTableBody = document.getElementById("workTableBody");
+const emptyMessage = document.getElementById("emptyMessage");
+const backupBtn = document.getElementById("backupBtn");
+const restoreBtn = document.getElementById("restoreBtn");
+const restoreFile = document.getElementById("restoreFile");
 
 function getToday(){
+    const d = new Date();
 
-    const d =
-        new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
 
-    const y =
-        d.getFullYear();
-
-    const m =
-        String(
-            d.getMonth()+1
-        ).padStart(2,"0");
-
-    const day =
-        String(
-            d.getDate()
-        ).padStart(2,"0");
-
-    return (
-        y +
-        "-" +
-        m +
-        "-" +
-        day
-    );
-
+    return y + "-" + m + "-" + day;
 }
 
 function saveData(){
-
     try{
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(works)
-        );
-
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(works));
     }
     catch(error){
-
         console.log(error);
-
+        alert("Could not save data. Please check available storage.");
     }
-
 }
 
 function createId(){
-
-    return (
-        Date.now().toString() +
-        Math.random()
-            .toString(36)
-            .substring(2)
-    );
-
+    return Date.now().toString() + Math.random().toString(36).substring(2);
 }
 
-function addNewRow(){
+function addNewRow(focusDescription = false){
 
-    works.push({
-
+    const newWork = {
         id:createId(),
-
         date:getToday(),
-
         description:""
+    };
 
-    });
+    works.push(newWork);
 
     saveData();
-
     renderWorks();
 
+    if(focusDescription){
+        const rows = workTableBody.querySelectorAll("tr");
+        const lastRow = rows[rows.length-1];
+
+        if(lastRow){
+            const inputs = lastRow.querySelectorAll("input");
+
+            if(inputs[1]){
+                inputs[1].focus();
+            }
+        }
+    }
 }
 
 function renderWorks(){
 
     workTableBody.innerHTML = "";
 
+    /*
+       FIX:
+       Always keep one empty row when all work records
+       have been deleted or the app has no saved records.
+    */
     if(works.length === 0){
 
-        emptyMessage.style.display =
-            "block";
+        works.push({
+            id:createId(),
+            date:getToday(),
+            description:""
+        });
+
+        saveData();
+    }
+
+    emptyMessage.style.display = "none";
+
+    works.forEach(function(work,index){
+
+        const tr = document.createElement("tr");
+
+        const dateTd = document.createElement("td");
+        const dateInput = document.createElement("input");
+
+        dateInput.type = "date";
+        dateInput.value = work.date || "";
+        dateInput.autocomplete = "off";
+
+        dateInput.addEventListener("input",function(){
+            works[index].date = this.value;
+            saveData();
+        });
+
+        dateTd.appendChild(dateInput);
+
+        const descriptionTd = document.createElement("td");
+        const descriptionInput = document.createElement("input");
+
+        descriptionInput.type = "text";
+        descriptionInput.value = work.description || "";
+        descriptionInput.autocomplete = "off";
+        descriptionInput.placeholder = "Work description";
+
+        descriptionInput.addEventListener("input",function(){
+            works[index].description = this.value;
+            saveData();
+        });
+
+        descriptionTd.appendChild(descriptionInput);
+
+        const deleteTd = document.createElement("td");
+        const deleteBtn = document.createElement("button");
+
+        deleteBtn.type = "button";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.textContent = "×";
+        deleteBtn.setAttribute("aria-label","Delete");
+
+        deleteBtn.addEventListener("click",function(){
+
+            works.splice(index,1);
+
+            saveData();
+
+            /*
+               renderWorks() will automatically create
+               one blank row if this was the last record.
+            */
+            renderWorks();
+        });
+
+        deleteTd.appendChild(deleteBtn);
+
+        tr.appendChild(dateTd);
+        tr.appendChild(descriptionTd);
+        tr.appendChild(deleteTd);
+
+        workTableBody.appendChild(tr);
+    });
+}
+
+/* Enter key navigation */
+workTableBody.addEventListener("keydown",function(event){
+
+    if(event.key !== "Enter"){
+        return;
+    }
+
+    const current = event.target;
+
+    if(!current || current.tagName !== "INPUT"){
+        return;
+    }
+
+    event.preventDefault();
+
+    const row = current.closest("tr");
+
+    if(!row){
+        return;
+    }
+
+    const inputs = Array.from(row.querySelectorAll("input"));
+    const currentIndex = inputs.indexOf(current);
+    const rowIndex = Array.from(workTableBody.querySelectorAll("tr")).indexOf(row);
+
+    if(currentIndex === 0){
+
+        if(inputs[1]){
+            inputs[1].focus();
+        }
 
         return;
-
     }
 
-    emptyMessage.style.display =
-        "none";
+    if(currentIndex === 1){
 
-    works.forEach(
-        function(work,index){
+        if(rowIndex === works.length-1){
 
-            const tr =
-                document.createElement(
-                    "tr"
-                );
-
-            const dateTd =
-                document.createElement(
-                    "td"
-                );
-
-            const dateInput =
-                document.createElement(
-                    "input"
-                );
-
-            dateInput.type =
-                "date";
-
-            dateInput.value =
-                work.date || "";
-
-            dateInput.autocomplete =
-                "off";
-
-            dateInput.dataset.index =
-                index;
-
-            dateInput.dataset.field =
-                "date";
-
-            dateInput.addEventListener(
-                "input",
-                function(){
-
-                    works[index].date =
-                        this.value;
-
-                    saveData();
-
-                }
-            );
-
-            dateTd.appendChild(
-                dateInput
-            );
-
-            const descriptionTd =
-                document.createElement(
-                    "td"
-                );
-
-            const descriptionInput =
-                document.createElement(
-                    "input"
-                );
-
-            descriptionInput.type =
-                "text";
-
-            descriptionInput.value =
-                work.description || "";
-
-            descriptionInput.autocomplete =
-                "off";
-
-            descriptionInput.placeholder =
-                "Work description";
-
-            descriptionInput.dataset.index =
-                index;
-
-            descriptionInput.dataset.field =
-                "description";
-
-            descriptionInput.addEventListener(
-                "input",
-                function(){
-
-                    works[index].description =
-                        this.value;
-
-                    saveData();
-
-                }
-            );
-
-            descriptionTd.appendChild(
-                descriptionInput
-            );
-
-            const deleteTd =
-                document.createElement(
-                    "td"
-                );
-
-            const deleteBtn =
-                document.createElement(
-                    "button"
-                );
-
-            deleteBtn.type =
-                "button";
-
-            deleteBtn.className =
-                "delete-btn";
-
-            deleteBtn.textContent =
-                "×";
-
-            deleteBtn.setAttribute(
-                "aria-label",
-                "Delete"
-            );
-
-            deleteBtn.addEventListener(
-                "click",
-                function(){
-
-                    works.splice(
-                        index,
-                        1
-                    );
-
-                    saveData();
-
-                    renderWorks();
-
-                }
-            );
-
-            deleteTd.appendChild(
-                deleteBtn
-            );
-
-            tr.appendChild(
-                dateTd
-            );
-
-            tr.appendChild(
-                descriptionTd
-            );
-
-            tr.appendChild(
-                deleteTd
-            );
-
-            workTableBody.appendChild(
-                tr
-            );
-
-        }
-    );
-
-}
-
-workTableBody.addEventListener(
-    "keydown",
-    function(event){
-
-        if(event.key !== "Enter"){
+            addNewRow(true);
 
             return;
-
         }
 
-        event.preventDefault();
+        const nextRow = workTableBody.querySelectorAll("tr")[rowIndex+1];
 
-        const current =
-            event.target;
+        if(nextRow){
 
-        if(
-            !current ||
-            current.tagName !==
-                "INPUT"
-        ){
+            const nextInputs = nextRow.querySelectorAll("input");
 
-            return;
-
+            if(nextInputs[0]){
+                nextInputs[0].focus();
+            }
         }
+    }
+});
 
-        const row =
-            current.closest(
-                "tr"
-            );
+/* Backup */
+backupBtn.addEventListener("click",function(){
 
-        if(!row){
+    const backupData = {
+        app:"Work Planner",
+        version:1,
+        backupDate:new Date().toISOString(),
+        works:works
+    };
 
-            return;
+    const json = JSON.stringify(backupData,null,2);
 
-        }
+    const blob = new Blob([json],{
+        type:"application/octet-stream"
+    });
 
-        const inputs =
-            Array.from(
-                row.querySelectorAll(
-                    "input"
-                )
-            );
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
 
-        const currentIndex =
-            inputs.indexOf(
-                current
-            );
+    link.href = url;
 
-        const rowIndex =
-            Number(
-                current.dataset.index
-            );
+    const d = new Date();
 
-        if(
-            currentIndex === 0
-        ){
+    const dateName =
+        d.getFullYear() + "-" +
+        String(d.getMonth()+1).padStart(2,"0") + "-" +
+        String(d.getDate()).padStart(2,"0");
 
-            if(inputs[1]){
+    link.download = "Work-Planner-Backup-" + dateName + ".backup";
 
-                inputs[1].focus();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
+    setTimeout(function(){
+        URL.revokeObjectURL(url);
+    },1000);
+});
+
+/* Restore */
+restoreBtn.addEventListener("click",function(){
+    restoreFile.value = "";
+    restoreFile.click();
+});
+
+restoreFile.addEventListener("change",function(){
+
+    const file = this.files[0];
+
+    if(!file){
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(event){
+
+        try{
+
+            const data = JSON.parse(event.target.result);
+
+            let restoredWorks = null;
+
+            if(Array.isArray(data)){
+                restoredWorks = data;
+            }
+            else if(data && Array.isArray(data.works)){
+                restoredWorks = data.works;
             }
 
-            return;
-
-        }
-
-        if(
-            currentIndex === 1
-        ){
-
-            if(
-                rowIndex ===
-                works.length - 1
-            ){
-
-                works.push({
-
-                    id:createId(),
-
-                    date:getToday(),
-
-                    description:""
-
-                });
-
-                saveData();
-
-                renderWorks();
-
-                const rows =
-                    workTableBody
-                    .querySelectorAll(
-                        "tr"
-                    );
-
-                const newRow =
-                    rows[
-                        rows.length - 1
-                    ];
-
-                if(newRow){
-
-                    const newInputs =
-                        newRow
-                        .querySelectorAll(
-                            "input"
-                        );
-
-                    if(
-                        newInputs[1]
-                    ){
-
-                        newInputs[1].focus();
-
-                    }
-
-                }
-
+            if(!restoredWorks){
+                alert("Invalid backup file.");
                 return;
-
             }
 
-            const nextRow =
-                workTableBody
-                .querySelectorAll(
-                    "tr"
-                )[
-                    rowIndex + 1
-                ];
-
-            if(nextRow){
-
-                const nextInputs =
-                    nextRow
-                    .querySelectorAll(
-                        "input"
-                    );
-
-                if(
-                    nextInputs[0]
-                ){
-
-                    nextInputs[0].focus();
-
-                }
-
+            if(!confirm("Restore this backup? Current data will be replaced.")){
+                return;
             }
 
-        }
+            works = restoredWorks.map(function(item){
 
-    }
-);
+                return {
+                    id:item.id || createId(),
+                    date:item.date || getToday(),
+                    description:item.description || ""
+                };
+            });
 
-backupBtn.addEventListener(
-    "click",
-    function(){
+            /*
+               If the backup is empty, renderWorks()
+               will create one blank row automatically.
+            */
+            saveData();
+            renderWorks();
 
-        const backupData = {
-
-            app:"Work Planner",
-
-            version:1,
-
-            backupDate:
-                new Date()
-                    .toISOString(),
-
-            works:works
-
-        };
-
-        const json =
-            JSON.stringify(
-                backupData,
-                null,
-                2
-            );
-
-        const blob =
-            new Blob(
-                [json],
-                {
-                    type:
-                        "application/octet-stream"
-                }
-            );
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-        link.href =
-            url;
-
-        const d =
-            new Date();
-
-        const dateName =
-            d.getFullYear()
-            + "-"
-            + String(
-                d.getMonth()+1
-            ).padStart(2,"0")
-            + "-"
-            + String(
-                d.getDate()
-            ).padStart(2,"0");
-
-        link.download =
-            "Work-Planner-Backup-"
-            + dateName
-            + ".backup";
-
-        document.body.appendChild(
-            link
-        );
-
-        link.click();
-
-        document.body.removeChild(
-            link
-        );
-
-        setTimeout(
-            function(){
-
-                URL.revokeObjectURL(
-                    url
-                );
-
-            },
-            1000
-        );
-
-    }
-);
-
-restoreBtn.addEventListener(
-    "click",
-    function(){
-
-        restoreFile.value =
-            "";
-
-        restoreFile.click();
-
-    }
-);
-
-restoreFile.addEventListener(
-    "change",
-    function(){
-
-        const file =
-            this.files[0];
-
-        if(!file){
-
-            return;
+            alert("Backup restored successfully.");
 
         }
-
-        const reader =
-            new FileReader();
-
-        reader.onload =
-            function(event){
-
-                try{
-
-                    const data =
-                        JSON.parse(
-                            event.target.result
-                        );
-
-                    let restoredWorks =
-                        null;
-
-                    if(
-                        Array.isArray(
-                            data
-                        )
-                    ){
-
-                        restoredWorks =
-                            data;
-
-                    }
-                    else if(
-                        data &&
-                        Array.isArray(
-                            data.works
-                        )
-                    ){
-
-                        restoredWorks =
-                            data.works;
-
-                    }
-
-                    if(
-                        !restoredWorks
-                    ){
-
-                        alert(
-                            "Invalid backup file."
-                        );
-
-                        return;
-
-                    }
-
-                    if(
-                        !confirm(
-                            "Restore this backup? Current data will be replaced."
-                        )
-                    ){
-
-                        return;
-
-                    }
-
-                    works =
-                        restoredWorks.map(
-                            function(item){
-
-                                return {
-
-                                    id:
-                                        item.id ||
-                                        createId(),
-
-                                    date:
-                                        item.date ||
-                                        getToday(),
-
-                                    description:
-                                        item.description ||
-                                        ""
-
-                                };
-
-                            }
-                        );
-
-                    saveData();
-
-                    renderWorks();
-
-                    alert(
-                        "Backup restored successfully."
-                    );
-
-                }
-                catch(error){
-
-                    alert(
-                        "Could not restore the backup file."
-                    );
-
-                }
-
-            };
-
-        reader.readAsText(
-            file
-        );
-
-    }
-);
-
-if(
-    "serviceWorker" in navigator
-){
-
-    window.addEventListener(
-        "load",
-        function(){
-
-            navigator.serviceWorker
-                .register(
-                    "sw.js"
-                )
-                .catch(
-                    function(error){
-
-                        console.log(
-                            "Service Worker registration failed:",
-                            error
-                        );
-
-                    }
-                );
-
+        catch(error){
+            alert("Could not restore the backup file.");
         }
-    );
+    };
 
+    reader.readAsText(file);
+});
+
+/* Service Worker */
+if("serviceWorker" in navigator){
+
+    window.addEventListener("load",function(){
+
+        navigator.serviceWorker.register("sw.js").catch(function(error){
+            console.log("Service Worker registration failed:",error);
+        });
+
+    });
 }
 
-if(
-    works.length === 0
-){
-
-    addNewRow();
-
-}
-else{
-
-    renderWorks();
-
-}
-
+/* Initial display */
+renderWorks();
 </script>
-
 </body>
 </html>
+:::
